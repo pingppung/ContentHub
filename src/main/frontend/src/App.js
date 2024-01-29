@@ -1,21 +1,38 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import styles from "./App.module.css";
+import Novel from "./components/Novel";
 function App() {
-  const [data, setDate] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [data, setDate] = useState([]);
+    useEffect(() => {
+        axios
+        .get("/api/series")
+        .then((res) => {
+            setDate(res.data);
+            setLoading(false);
+        })
+        .catch((err) => console.log(err));
+    }, []);
 
-  useEffect(() => {
-    axios
-      .get("/api/series")
-      .then((res) => setDate(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
-  return (
-      <div>
-        <h1>받아온 값:</h1>
-        <ul>
-          {data.map((title, index) => <li key={index}>{title}</li>)}
-        </ul>
+    return (
+      <div className={styles.container}>
+        {loading ? (
+          <div className={styles.loader}>
+            <span>Loading...</span>
+          </div>
+        ) : (
+          <div className={styles.novels}>
+            {data.map((item, index) => (
+              <Novel
+                key={index}
+                coverImg={item.coverImg}
+                title={item.title}
+                summary={item.summary}
+              />
+            ))}
+          </div>
+        )}
       </div>
     );
 }

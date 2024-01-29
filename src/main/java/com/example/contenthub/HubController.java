@@ -1,15 +1,18 @@
 package com.example.contenthub;
 
-import com.example.contenthub.crawling.CrawlingTest;
+import com.example.contenthub.crawling.NovelCrawler;
+
 import java.io.IOException;
 import java.util.List;
+
+import com.example.contenthub.crawling.NovelData;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 class HubController {
     @GetMapping("/api/series")
-    public List<String> test() throws IOException {
-        return CrawlingTest.crawl();
+    public List<NovelData> test() throws IOException {
+        return NovelCrawler.crawl();
     }
 }
