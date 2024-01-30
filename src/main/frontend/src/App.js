@@ -1,41 +1,16 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import styles from "./App.module.css";
-import Novel from "./components/Novel";
-function App() {
-    const [loading, setLoading] = useState(true);
-    const [data, setDate] = useState([]);
-    useEffect(() => {
-        axios
-        .get("/api/series")
-        .then((res) => {
-            setDate(res.data);
-            setLoading(false);
-        })
-        .catch((err) => console.log(err));
-    }, []);
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./routes/Home";
+import NovelHome from "./routes/NovelHome";
 
+function App() {
     return (
-      <div className={styles.container}>
-        {loading ? (
-          <div className={styles.loader}>
-            <span>Loading...</span>
-          </div>
-        ) : (
-          <div className={styles.novels}>
-            {data.map((item, index) => (
-              <Novel
-                key={index}
-                coverImg={item.coverImg}
-                title={item.title}
-                summary={item.summary}
-                genre={item.genre}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    );
+        <Router>
+          <Routes>
+            <Route path="/novel" element={<NovelHome />} />
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </Router>
+      );
 }
 
 export default App;
