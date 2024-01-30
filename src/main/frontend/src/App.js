@@ -29,6 +29,7 @@ function App() {
                 coverImg={item.coverImg}
                 title={item.title}
                 summary={item.summary}
+                genre={item.genre}
               />
             ))}
           </div>
