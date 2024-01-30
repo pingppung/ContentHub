@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 class HubController {
-    @GetMapping("/api/series")
+    @GetMapping("/novel")
     public List<NovelData> test() throws IOException {
         return NovelCrawler.crawl();
     }
