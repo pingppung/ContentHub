@@ -1,19 +1,29 @@
-package com.example.contenthub.crawling;
+package com.example.contenthub.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.example.contenthub.crawling.NovelData;
+import com.example.contenthub.repository.NovelRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class NovelCrawler {
+@Service
+public class NovelCrawlerService {
+
+    @Autowired
+    private NovelRepository novelRepository;
     final static String base_url = "https://series.naver.com";
     final static String top100 = "/novel/top100List.series?rankingTypeCode=DAILY&categoryCode=ALL&page=";
 
-    public static List<NovelData> crawl() throws IOException {
+    public void crawl() throws IOException {
         List<NovelData> novels = new ArrayList<>();
 
         for (int i = 1; i < 6; i++) {
@@ -23,10 +33,10 @@ public class NovelCrawler {
             List<NovelData> list = getDataList(doc);
             novels.addAll(list);
         }
-        return novels;
+        novelRepository.saveAll(novels);
     }
 
-    private static List<NovelData> getDataList(Document document) throws IOException {
+    private List<NovelData> getDataList(Document document) throws IOException {
         List<NovelData> novels = new ArrayList<>();
         Elements novelElements = document.select(".comic_top_lst li");
 
@@ -41,9 +51,23 @@ public class NovelCrawler {
             String coverImg = element.select("img").attr("src");
             String summary = element.select(".comic_cont p[class*=dsc]").text();
 
-            NovelData novelData = new NovelData(title, coverImg, summary, genre);
+
+            Pattern pattern = Pattern.compile("productNo=(\\d+)");
+            Matcher matcher = pattern.matcher(detailURL);
+
+            String productId = null;
+            if (matcher.find()) {
+                productId = matcher.group(1);
+            } else {
+                System.out.println("Product ID not found in URL");
+            }
+            NovelData novelData = new NovelData(productId, title, coverImg, summary, genre);
             novels.add(novelData);
         }
         return novels;
+    }
+
+    public List<NovelData> getAllData() {
+        return novelRepository.findAll();
     }
 }
