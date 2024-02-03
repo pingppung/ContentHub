@@ -25,7 +25,8 @@ function App() {
           <div className={styles.novels}>
             {data.map((item, index) => (
               <Novel
-                key={index}
+                key={item.id}
+                id={item.id}
                 coverImg={item.coverImg}
                 title={item.title}
                 summary={item.summary}

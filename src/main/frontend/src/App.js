@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./routes/Home";
 import NovelHome from "./routes/NovelHome";
-
+import NovelDetail from "./components/NovelDetail";
 function App() {
     return (
         <Router>
