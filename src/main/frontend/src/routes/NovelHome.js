@@ -20,15 +20,16 @@ function NovelHome() {
   }, []);
 
   const openNovelDetail = (novel) => {
-  console.log(novel);
+    document.body.style.overflow="hidden";
     setSelectedNovel(novel);
   };
 
   const closeNovelDetail = () => {
+    document.body.style.overflow="unset";
     setSelectedNovel(null);
   };
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${selectedNovel != null ? styles.blurred : ""}`}>
       {loading ? (
         <div className={styles.loader}>
           <span>Loading...</span>
