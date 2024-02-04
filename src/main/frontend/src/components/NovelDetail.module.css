@@ -2,14 +2,46 @@
     width: 80%;
     height: 70%;
     z-index: 100;
-    position: absolute;
-    background-color: skyblue;
+    position: fixed;
+    background-color: white;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 10px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
 }
-.close {
-    font-size: 25px;
-}
+ .novel__detail section {
+   padding: 20px;
+   border-radius: 5px;
+ }
+
+ .novel__detail header {
+   font-size: 1.5rem;
+   font-weight: bold;
+   margin-bottom: 10px;
+ }
+
+ .novel__detail footer {
+   text-align: right;
+ }
+
+ .novel__detail button {
+   padding: 8px 12px;
+   background-color: #004bff;
+   color: #fff;
+   border: none;
+   cursor: pointer;
+   border-radius: 5px;
+ }
+
+ .novel__detail section {
+   transition: transform 0.3s ease-in-out;
+ }
+
+ .novel__detail.open {
+   display: flex;
+ }
+
+ .novel__detail.open section {
+   transform: scale(1);
+ }
