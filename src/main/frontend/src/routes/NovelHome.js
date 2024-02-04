@@ -8,7 +8,6 @@ function NovelHome() {
   const [loading, setLoading] = useState(true);
   const [data, setDate] = useState([]);
   const [selectedNovel, setSelectedNovel] = useState(null);
-
   useEffect(() => {
     axios
       .get("/novel")
@@ -19,23 +18,33 @@ function NovelHome() {
       .catch((err) => console.log(err));
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = selectedNovel ? "hidden" : "unset";
+  }, [selectedNovel]);
+
   const openNovelDetail = (novel) => {
-    document.body.style.overflow="hidden";
     setSelectedNovel(novel);
   };
 
   const closeNovelDetail = () => {
-    document.body.style.overflow="unset";
     setSelectedNovel(null);
   };
   return (
-    <div className={`${styles.container} ${selectedNovel != null ? styles.blurred : ""}`}>
+    <div
+      className={`${styles.container} ${
+        selectedNovel != null ? styles.blurred : ""
+      }`}
+    >
       {loading ? (
         <div className={styles.loader}>
           <span>Loading...</span>
         </div>
       ) : (
-        <div className={`${styles.novels} ${selectedNovel != null ? styles.blurred : ""}`}>
+        <div
+          className={`${styles.novels} ${
+            selectedNovel != null ? styles.blurred : ""
+          }`}
+        >
           {data.map((item, index) => (
             <Novel
               key={item.id}

@@ -1,23 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import styles from "./NovelDetail.module.css";
 
 function NovelDetail({ novelInfo, open, close }) {
-  const [novelId, setNovelId] = useState("");
+  const modalRef = useRef();
 
   useEffect(() => {
-    setNovelId(novelInfo.id);
-  }, [novelInfo]);
+    document.addEventListener("mousedown", clickModalOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", clickModalOutside);
+    };
+  }, [modalRef]);
+  const clickModalOutside = (e) => {
+    console.log("asd");
+    if (!modalRef.current.contains(e.target)) {
+      close();
+    }
+  };
   return (
-    <div className={styles.novel__detail}>
+    <div ref={modalRef} className={styles.novel__detail}>
       {open ? (
         <section>
-          <header>
-            {novelInfo.title}
-          </header>
+          <header>{novelInfo.title}</header>
 
           <div className={styles.novel__content}>
-            {novelInfo.genre} <br/>
+            {novelInfo.genre} <br />
             {novelInfo.summary}
           </div>
 
@@ -30,16 +38,16 @@ function NovelDetail({ novelInfo, open, close }) {
       ) : null}
     </div>
   );
-};
+}
 
 NovelDetail.propTypes = {
   novelInfo: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      coverImg: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      summary: PropTypes.string.isRequired,
-      genre: PropTypes.string.isRequired,
-    }).isRequired,
+    id: PropTypes.string.isRequired,
+    coverImg: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    summary: PropTypes.string.isRequired,
+    genre: PropTypes.string.isRequired,
+  }).isRequired,
   open: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,
 };
