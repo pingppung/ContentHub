@@ -23,10 +23,12 @@ function NovelHome() {
   }, [selectedNovel]);
 
   const openNovelDetail = (novel) => {
+   document.body.style.background = "rgba(0, 0, 0, 0.8)";
     setSelectedNovel(novel);
   };
 
   const closeNovelDetail = () => {
+  document.body.style.background = "rgba(0, 0, 0, 0)";
     setSelectedNovel(null);
   };
   return (
