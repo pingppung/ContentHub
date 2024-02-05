@@ -1,7 +1,5 @@
 .container {
-  height: 100%;
-  display: flex;
-  justify-content: center;
+  padding: 15px;
 }
 
 .loader {
@@ -14,26 +12,13 @@
 }
 
 .novels {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(400px, 1fr));
-  grid-gap: 100px;
-  padding: 50px;
-  width: 80%;
-  padding-top: 70px;
-
-}
-.container.blurred:not(.novel__detail),
-.novel.blurred{
-  top:0; left: 0; bottom: 0; right: 0;
-  background: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  padding: 8px;
+  display: inline-block;
+  position: relative;
+  vertical-align: top;
 }
 .novels.blurred{
   filter: brightness(20%);
   pointer-events : none;
-}
-@media screen and (max-width: 1090px) {
-  .novels {
-    grid-template-columns: 1fr;
-    width: 100%;
-  }
 }

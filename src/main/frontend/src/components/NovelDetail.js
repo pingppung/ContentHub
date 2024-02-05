@@ -22,11 +22,16 @@ function NovelDetail({ novelInfo, open, close }) {
     <div ref={modalRef} className={styles.novel__detail}>
       {open ? (
         <section>
-          <header>{novelInfo.title}</header>
+          <header>
+            <h2 className={styles.novel__title}>{novelInfo.title}
+          </h2></header>
 
           <div className={styles.novel__content}>
-            {novelInfo.genre} <br />
-            {novelInfo.summary}
+            <img src={novelInfo.coverImg} alt={novelInfo.title} className={styles.novel__img} />
+            <div>
+              <h4 className={styles.novel__genre}>{novelInfo.genre}</h4>
+              <p>{novelInfo.summary}</p>
+            </div>
           </div>
 
           <footer>
