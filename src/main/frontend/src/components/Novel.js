@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styles from "./Novel.module.css";
 
-function Novel({ id, coverImg, title, summary, genre, openNovelDetail }) {
+function Novel({ title, coverImg, summary, genre, openNovelDetail }) {
   const handleClick = () => {
-    openNovelDetail({ id, coverImg, title, summary, genre });
+    openNovelDetail({ title, coverImg, summary, genre });
   };
   return (
     <div className={styles.novel} onClick={handleClick}>
@@ -17,9 +17,8 @@ function Novel({ id, coverImg, title, summary, genre, openNovelDetail }) {
 }
 
 Novel.propTypes = {
-  id: PropTypes.string.isRequired,
-  coverImg: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
+  coverImg: PropTypes.string.isRequired,
   summary: PropTypes.string.isRequired,
   genre: PropTypes.string.isRequired,
   openNovelDetail: PropTypes.func.isRequired,

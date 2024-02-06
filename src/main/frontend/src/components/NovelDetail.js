@@ -46,9 +46,8 @@ function NovelDetail({ novelInfo, open, close }) {
 
 NovelDetail.propTypes = {
   novelInfo: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    coverImg: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
+    coverImg: PropTypes.string.isRequired,
     summary: PropTypes.string.isRequired,
     genre: PropTypes.string.isRequired,
   }).isRequired,

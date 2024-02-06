@@ -18,7 +18,7 @@
   position: relative;
   vertical-align: top;
 }
-.novels.blurred{
+.novels.blurred, .selectedGenre.blurred {
   filter: brightness(20%);
-  pointer-events : none;
+  pointer-events: none;
 }

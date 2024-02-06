@@ -3,25 +3,22 @@ package com.example.contenthub.crawling;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+
 @Document(collection = "novel")
 public class NovelData {
     @Id
-    private final String id;
     private final String title;
     private final String coverImg;
     private final String summary;
     private final String genre;
+    private final Site site;
 
-    public NovelData(String id, String title, String coverImg, String summary, String genre) {
-        this.id = id;
+    public NovelData(String title, String coverImg, String summary, String genre, Site site) {
         this.title = title;
         this.coverImg = coverImg;
         this.summary = summary;
         this.genre = genre;
-    }
-
-    public String getId() {
-        return id;
+        this.site = site;
     }
 
     public String getTitle() {
@@ -40,4 +37,7 @@ public class NovelData {
         return genre;
     }
 
+    public Site getSite() {
+        return site;
+    }
 }

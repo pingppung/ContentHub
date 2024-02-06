@@ -14,7 +14,7 @@ function NovelHome() {
   useEffect(() => {
     const apiUrl = selectedGenre !== "전체" ? `/novel/${selectedGenre}` : "/novel";
     axios
-      .get(apiUrl, { params: { genre: selectedGenre } })
+      .post(apiUrl, { params: { genre: selectedGenre } })
       .then((res) => {
         setDate(res.data);
         setLoading(false);
@@ -48,14 +48,15 @@ function NovelHome() {
         </div>
       ) : (
         <>
-          <GenreButtons selectedGenre={selectedGenre} handleGenreClick={handleGenreClick} />
+          <div className={`${styles.selectedGenre} ${selectedNovel != null ? styles.blurred : ""}`}>
+            <GenreButtons selectedGenre={selectedGenre} handleGenreClick={handleGenreClick} />
+          </div>
           <div className={`${styles.novels} ${selectedNovel != null ? styles.blurred : ""}`}>
             {data.map((item, index) => (
               <Novel
-                key={item.id}
-                id={item.id}
-                coverImg={item.coverImg}
+                key={item.title}
                 title={item.title}
+                coverImg={item.coverImg}
                 summary={item.summary}
                 genre={item.genre}
                 openNovelDetail={() => openNovelDetail(item)}
