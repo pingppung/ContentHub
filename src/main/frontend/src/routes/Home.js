@@ -1,8 +1,8 @@
-function App() {
+function App({}) {
     return (
       <div className="btn">
-        <a href="/novel" class="novel">
-          <span class="WEBnovel">웹소설</span>
+        <a href="/novel" className="novel">
+          <span className="WEBnovel">웹소설</span>
         </a>
       </div>
     );

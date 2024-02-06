@@ -13,7 +13,6 @@ function NovelDetail({ novelInfo, open, close }) {
     };
   }, [modalRef]);
   const clickModalOutside = (e) => {
-    console.log("asd");
     if (!modalRef.current.contains(e.target)) {
       close();
     }

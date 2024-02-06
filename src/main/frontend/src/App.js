@@ -7,6 +7,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/novel" element={<NovelHome />} />
+            <Route path="/novel/:genres" element={<NovelHome />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </Router>
