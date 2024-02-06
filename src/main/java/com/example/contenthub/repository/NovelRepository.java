@@ -11,4 +11,6 @@ import java.util.List;
 public interface NovelRepository extends MongoRepository<NovelData, String> {
 
     List<NovelData> findByGenre(String genre);
+
+    NovelData findByTitle(String title);
 }
