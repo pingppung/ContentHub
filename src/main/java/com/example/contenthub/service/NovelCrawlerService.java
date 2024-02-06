@@ -70,4 +70,8 @@ public class NovelCrawlerService {
     public List<NovelData> getAllData() {
         return novelRepository.findAll();
     }
+
+    public List<NovelData> getDataByGenre(String genre) {
+        return novelRepository.findByGenre(genre);
+    }
 }
