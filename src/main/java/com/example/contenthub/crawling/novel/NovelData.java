@@ -1,19 +1,29 @@
-package com.example.contenthub.crawling;
+package com.example.contenthub.crawling.novel;
 
+import com.example.contenthub.crawling.Site;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+
+import java.util.List;
 
 
 @Document(collection = "novel")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class NovelData {
     @Id
     private final String title;
     private final String coverImg;
     private final String summary;
     private final String genre;
-    private final Site site;
 
-    public NovelData(String title, String coverImg, String summary, String genre, Site site) {
+    @JsonIgnore
+    private List<Site> site;
+
+    public NovelData(String title, String coverImg, String summary, String genre, List<Site> site) {
         this.title = title;
         this.coverImg = coverImg;
         this.summary = summary;
@@ -37,7 +47,11 @@ public class NovelData {
         return genre;
     }
 
-    public Site getSite() {
+    public List<Site> getSite() {
         return site;
+    }
+
+    public void setSite(List<Site> site) {
+        this.site = site;
     }
 }
