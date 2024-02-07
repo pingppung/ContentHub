@@ -1,5 +1,6 @@
-package com.example.contenthub.crawling;
+package com.example.contenthub.crawling.novel;
 
+import com.example.contenthub.crawling.Site;
 import org.jsoup.Jsoup;
 
 import org.jsoup.nodes.Document;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,9 +54,10 @@ public class NaverSeriesCrawler {
             if (matcher.find()) {
                 productId = matcher.group(1);
             } else {
-                System.out.println("Product ID not found in URL");
+                System.out.println("해당 작품 id를 찾을 수가 없습니다!");
             }
-            NovelData novelData = new NovelData(title, coverImg, summary, genre, new Site("네이버시리즈", productId));
+            NovelData novelData = new NovelData(title, coverImg, summary, genre, Arrays.asList(new Site(NovelSite.NAVER_SERIES.getName(), productId)));
+
             novels.add(novelData);
         }
         return novels;
