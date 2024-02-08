@@ -23,12 +23,15 @@ public class NovelData {
     @JsonIgnore
     private List<Site> site;
 
-    public NovelData(String title, String coverImg, String summary, String genre, List<Site> site) {
+    private boolean adultContent;
+
+    public NovelData(String title, String coverImg, String summary, String genre, List<Site> site, boolean adultContent) {
         this.title = title;
         this.coverImg = coverImg;
         this.summary = summary;
         this.genre = genre;
         this.site = site;
+        this.adultContent = adultContent;
     }
 
     public String getTitle() {
@@ -53,5 +56,9 @@ public class NovelData {
 
     public void setSite(List<Site> site) {
         this.site = site;
+    }
+
+    public boolean isAdultContent() {
+        return adultContent;
     }
 }

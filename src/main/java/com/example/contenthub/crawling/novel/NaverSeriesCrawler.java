@@ -50,13 +50,18 @@ public class NaverSeriesCrawler {
             String coverImg = element.select("img").attr("src");
             String summary = element.select(".comic_cont p[class*=dsc]").text();
 
+
             String productId = null;
             if (matcher.find()) {
                 productId = matcher.group(1);
             } else {
                 System.out.println("해당 작품 id를 찾을 수가 없습니다!");
             }
-            NovelData novelData = new NovelData(title, coverImg, summary, genre, Arrays.asList(new Site(NovelSite.NAVER_SERIES.getName(), productId)));
+            boolean adultContent = false;
+
+            Elements adultElements = element.select(".comic_cont h3 em[class*=ico n19]");
+            if (!adultElements.isEmpty()) adultContent = true;
+            NovelData novelData = new NovelData(title, coverImg, summary, genre, Arrays.asList(new Site(NovelSite.NAVER_SERIES.getName(), productId)), adultContent);
 
             novels.add(novelData);
         }

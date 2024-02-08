@@ -37,9 +37,7 @@ public class NovelCrawlerService {
             NovelData existingNovel = novelRepository.findByTitle(novel.getTitle());
             // 이미 존재하는 title에 대해서 site 값을 추가
             if (existingNovel != null) {
-                System.out.println(novel.getSite().get(0));
                 List<Site> updatedSites = existingNovel.getSite();
-                //System.out.println(novel.getSites().get(0));
                 updatedSites.add(novel.getSite().get(0));
                 existingNovel.setSite(updatedSites);
                 novelRepository.save(existingNovel);
