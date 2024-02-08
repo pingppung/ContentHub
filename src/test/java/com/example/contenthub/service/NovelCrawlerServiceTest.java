@@ -32,8 +32,8 @@ public class NovelCrawlerServiceTest {
 
     @Test
     public void testSaveNovels() {
-        NovelData existingNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new Site("Site1", "ID1")));
-        NovelData newNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new Site("Site2", "ID2")));
+        NovelData existingNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new Site("Site1", "ID1")), false);
+        NovelData newNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new Site("Site2", "ID2")), false);
         List<NovelData> list = new ArrayList<>();
         list.add(existingNovel);
         list.add(newNovel);

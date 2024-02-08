@@ -59,6 +59,7 @@ function NovelHome() {
                 coverImg={item.coverImg}
                 summary={item.summary}
                 genre={item.genre}
+                adultContent={item.adultContent}
                 openNovelDetail={() => openNovelDetail(item)}
               />
             ))}
