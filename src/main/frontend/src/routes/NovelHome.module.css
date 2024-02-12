@@ -18,7 +18,17 @@
   position: relative;
   vertical-align: top;
 }
-.novels.blurred, .selectedGenre.blurred {
+
+.novels.blurred, .header.blurred {
   filter: brightness(20%);
   pointer-events: none;
+}
+
+.hearder{
+  display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header .genreButtons {
+display: inline-block;
 }

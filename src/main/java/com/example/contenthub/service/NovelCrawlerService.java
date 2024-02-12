@@ -62,4 +62,8 @@ public class NovelCrawlerService {
     public void deleteDataByTitle(String title) {
         novelRepository.deleteByTitle(title);
     }
+
+    public List<NovelData> getDataByTitleContaining(String title) {
+        return novelRepository.findByTitleContaining(title);
+    }
 }

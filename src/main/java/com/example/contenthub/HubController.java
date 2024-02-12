@@ -3,14 +3,13 @@ package com.example.contenthub;
 import com.example.contenthub.service.NovelCrawlerService;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.example.contenthub.crawling.novel.NovelData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 class HubController {
@@ -21,8 +20,9 @@ class HubController {
         this.novelCrawlerService = novelCrawlerService;
     }
 
-    @PostMapping("/novel/{genre}")
-    public List<NovelData> test2(@PathVariable String genre) {
+    @GetMapping("/novel")
+    public List<NovelData> test2(@RequestParam String genre) {
+        if (genre.equals("전체")) return novelCrawlerService.getAllData();
         return novelCrawlerService.getDataByGenre(genre);
 
     }
@@ -34,10 +34,10 @@ class HubController {
 //        System.out.println("finsih");
 //    }
 
-
-    @PostMapping("/novel")
-    public List<NovelData> test() {
-        return novelCrawlerService.getAllData();
+    @GetMapping("/novel/search")
+    public List<NovelData> a(@RequestParam String title) {
+        String decodedTitle = URLDecoder.decode(title, StandardCharsets.UTF_8);
+        return novelCrawlerService.getDataByTitleContaining(decodedTitle);
     }
 
 
