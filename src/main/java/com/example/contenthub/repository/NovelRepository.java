@@ -14,4 +14,6 @@ public interface NovelRepository extends MongoRepository<NovelData, String> {
     NovelData findByTitle(String title);
 
     void deleteByTitle(String title);
+
+    List<NovelData> findByTitleContaining(String word);
 }
