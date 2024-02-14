@@ -1,6 +1,6 @@
 package com.example.contenthub.crawling.novel;
 
-import com.example.contenthub.crawling.Site;
+import com.example.contenthub.crawling.SiteDTO;
 import org.jsoup.Jsoup;
 
 import org.jsoup.nodes.Document;
@@ -61,7 +61,7 @@ public class NaverSeriesCrawler {
 
             Elements adultElements = element.select(".comic_cont h3 em[class*=ico n19]");
             if (!adultElements.isEmpty()) adultContent = true;
-            NovelData novelData = new NovelData(title, coverImg, summary, genre, Arrays.asList(new Site(NovelSite.NAVER_SERIES.getName(), productId)), adultContent);
+            NovelData novelData = new NovelData(title, coverImg, summary, genre, Arrays.asList(new SiteDTO(NovelSite.NAVER_SERIES.getName(), productId)), adultContent);
 
             novels.add(novelData);
         }

@@ -1,8 +1,9 @@
 package com.example.contenthub.crawling.novel;
 
-import com.example.contenthub.crawling.Site;
+import com.example.contenthub.crawling.SiteDTO;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -12,7 +13,7 @@ import java.util.List;
 
 
 @Document(collection = "novel")
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+//@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class NovelData {
     @Id
     private final String title;
@@ -20,12 +21,13 @@ public class NovelData {
     private final String summary;
     private final String genre;
 
-    @JsonIgnore
-    private List<Site> site;
+    //@JsonIgnore
+    @JsonSerialize
+    private List<SiteDTO> site;
 
-    private boolean adultContent;
+    private final boolean adultContent;
 
-    public NovelData(String title, String coverImg, String summary, String genre, List<Site> site, boolean adultContent) {
+    public NovelData(String title, String coverImg, String summary, String genre, List<SiteDTO> site, boolean adultContent) {
         this.title = title;
         this.coverImg = coverImg;
         this.summary = summary;
@@ -50,11 +52,11 @@ public class NovelData {
         return genre;
     }
 
-    public List<Site> getSite() {
+    public List<SiteDTO> getSite() {
         return site;
     }
 
-    public void setSite(List<Site> site) {
+    public void setSite(List<SiteDTO> site) {
         this.site = site;
     }
 

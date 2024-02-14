@@ -3,7 +3,7 @@ package com.example.contenthub.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.example.contenthub.crawling.Site;
+import com.example.contenthub.crawling.SiteDTO;
 import com.example.contenthub.crawling.novel.NaverSeriesCrawler;
 import com.example.contenthub.crawling.novel.NovelData;
 import com.example.contenthub.repository.NovelRepository;
@@ -37,7 +37,7 @@ public class NovelCrawlerService {
             NovelData existingNovel = novelRepository.findByTitle(novel.getTitle());
             // 이미 존재하는 title에 대해서 site 값을 추가
             if (existingNovel != null) {
-                List<Site> updatedSites = existingNovel.getSite();
+                List<SiteDTO> updatedSites = existingNovel.getSite();
                 updatedSites.add(novel.getSite().get(0));
                 existingNovel.setSite(updatedSites);
                 novelRepository.save(existingNovel);
