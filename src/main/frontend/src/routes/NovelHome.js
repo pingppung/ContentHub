@@ -15,7 +15,7 @@
       const [searchInput, setSearchInput] = useState("");
 
       useEffect(() => {
-        const apiUrl = selectedGenre !== "전체" ? `/novel?genre=${selectedGenre}` : "/novel";
+        //const apiUrl = selectedGenre !== "전체" ? `/novel?genre=${selectedGenre}` : "/novel";
         axios
           .get("/novel", { params: { genre: selectedGenre } })
           .then((res) => {
@@ -27,8 +27,9 @@
 
       useDidMountEffect(() => {
         const encodedTitle = encodeURIComponent(searchInput);
+        //const apiUrl = `/novel/search?title=${encodedTitle}`;
             axios
-              .get(`/novel/search`, { params: { title: encodedTitle }})
+              .get(`/novel/search`, { params: { title: encodedTitle }}, {headers: {'content-type': 'application/json'}})
               .then((res) => {
                 setDate(res.data);
               })
@@ -42,6 +43,7 @@
 
       const openNovelDetail = (novel) => {
         document.body.style.background = "rgba(0, 0, 0, 0.8)";
+        console.log(novel);
         setSelectedNovel(novel);
       };
 

@@ -1,6 +1,6 @@
 package com.example.contenthub.service;
 
-import com.example.contenthub.crawling.Site;
+import com.example.contenthub.crawling.SiteDTO;
 import com.example.contenthub.crawling.novel.NaverSeriesCrawler;
 import com.example.contenthub.crawling.novel.NovelData;
 import com.example.contenthub.repository.NovelRepository;
@@ -32,8 +32,8 @@ public class NovelCrawlerServiceTest {
 
     @Test
     public void testSaveNovels() {
-        NovelData existingNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new Site("Site1", "ID1")), false);
-        NovelData newNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new Site("Site2", "ID2")), false);
+        NovelData existingNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new SiteDTO("Site1", "ID1")), false);
+        NovelData newNovel = new NovelData("Title", "coverImg", "summary", "genre", Arrays.asList(new SiteDTO("Site2", "ID2")), false);
         List<NovelData> list = new ArrayList<>();
         list.add(existingNovel);
         list.add(newNovel);
