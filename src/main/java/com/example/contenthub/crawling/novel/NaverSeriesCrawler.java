@@ -39,7 +39,7 @@ public class NaverSeriesCrawler {
 
         for (Element element : novelElements) {
             Elements novel = element.select(".comic_cont a[class*=NPI=a:content]");
-            String title = novel.text();
+            String title = extractTitle(novel.text());
             String detailURL = base_url + novel.attr("href");
             Pattern pattern = Pattern.compile("productNo=(\\d+)");
             Matcher matcher = pattern.matcher(detailURL);
@@ -68,4 +68,9 @@ public class NaverSeriesCrawler {
         return novels;
     }
 
+
+    // 정규표현식을 사용하여 [ ... ] 패턴을 찾아내고 해당 부분을 제거
+    private static String extractTitle(String title) {
+        return title.replaceAll("\\[.*?\\]", "").trim();
+    }
 }

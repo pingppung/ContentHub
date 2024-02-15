@@ -21,21 +21,20 @@ class HubController {
     }
 
     @GetMapping("/novel")
-    public List<NovelData> test2(@RequestParam String genre) {
+    public List<NovelData> getNovelsByGenre(@RequestParam String genre) {
         if (genre.equals("전체")) return novelCrawlerService.getAllData();
         return novelCrawlerService.getDataByGenre(genre);
 
     }
 
     // 해당 위치에 들어갈때마다 크롤링으로 인한 속도 문제로 빠른 테스트 진행을 위해 잠깐 주석처리해놓음
-//    @GetMapping("/api/series")
-//    public void crawl() throws IOException {
-//        novelCrawlerService.crawl();
-//        System.out.println("finsih");
-//    }
+    @GetMapping("/api/series")
+    public void crawl() throws IOException {
+        novelCrawlerService.crawl();
+    }
 
     @GetMapping("/novel/search")
-    public List<NovelData> a(@RequestParam String title) {
+    public List<NovelData> searchNovelsByTitle(@RequestParam String title) {
         String decodedTitle = URLDecoder.decode(title, StandardCharsets.UTF_8);
         return novelCrawlerService.getDataByTitleContaining(decodedTitle);
     }
