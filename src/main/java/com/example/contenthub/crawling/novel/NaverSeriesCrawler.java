@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 @Component
 public class NaverSeriesCrawler {
     final static String base_url = "https://series.naver.com";
-    final static String top100 = "/novel/top100List.series?rankingTypeCode=DAILY&categoryCode=ALL&page=";
+    final static String top100 = "/novel/top100List.series?rankingTypeCode=HOURLY&categoryCode=ALL&page=";
 
     public List<NovelData> crawl() throws IOException {
         List<NovelData> novels = new ArrayList<>();

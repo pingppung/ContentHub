@@ -2,6 +2,7 @@ package com.example.contenthub.crawling.novel;
 
 public enum NovelSite {
     NAVER_SERIES("네이버 시리즈", "https://series.naver.com"),
+    KAKAO_PAGE("카카오페이지", "https://page.kakao.com"),
     RIDI_BOOKS("리디북스", "https://www.ridibooks.com");
 
     private final String name;
