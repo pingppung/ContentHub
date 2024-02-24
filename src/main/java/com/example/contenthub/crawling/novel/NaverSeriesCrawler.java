@@ -1,20 +1,12 @@
 package com.example.contenthub.crawling.novel;
 
 import com.example.contenthub.crawling.SiteDTO;
-import com.example.contenthub.crawling.WebDriverUtils;
-import org.jsoup.Jsoup;
 
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.example.contenthub.crawling.WebDriverUtils.closeWebDriver;
-import static com.example.contenthub.crawling.WebDriverUtils.createWebDriver;
+import static com.example.contenthub.crawling.WebDriverUtils.*;
 
 @Component
 public class NaverSeriesCrawler {
@@ -34,10 +25,13 @@ public class NaverSeriesCrawler {
         List<NovelData> novels = new ArrayList<>();
         WebDriver driver = createWebDriver();
         try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             for (int i = 1; i < 6; i++) {
                 String url = BASE_URL + TOP100 + i;
                 driver.get(url);
-                Thread.sleep(2000);
+
+
+                wait.until(ExpectedConditions.urlToBe(url));
                 List<NovelData> list = getNaverSeriesData(driver);
                 novels.addAll(list);
             }
@@ -79,11 +73,12 @@ public class NaverSeriesCrawler {
             String detailURL = href;
             driver.get(detailURL);
 
-            Thread.sleep(2000);
-            WebElement genreElement = driver.findElement(By.xpath("//*[@id=\"content\"]/ul[1]/li/ul/li[2]/span/a"));
+            By genreLocator = By.xpath("//*[@id=\"content\"]/ul[1]/li/ul/li[2]/span/a");
+            waitForElement(driver, genreLocator);
+            WebElement genreElement = driver.findElement(genreLocator);
 
             return genreElement.getText();
-        } catch (TimeoutException | InterruptedException e) {
+        } catch (TimeoutException e) {
             throw new RuntimeException(e);
         } finally {
             closeWebDriver(driver);
