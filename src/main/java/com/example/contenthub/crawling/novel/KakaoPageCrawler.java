@@ -3,10 +3,6 @@ package com.example.contenthub.crawling.novel;
 import com.example.contenthub.crawling.SiteDTO;
 import com.google.gson.Gson;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
 
@@ -15,25 +11,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static com.example.contenthub.crawling.WebDriverUtils.*;
 
 @Component
 public class KakaoPageCrawler {
     final static String BASE_URL = "https://page.kakao.com";
     final static String TOP300 = "/menu/10011/screen/94";
-
-    private WebDriver createWebDriver() {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver.exe");
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-        chromeOptions.addArguments("--headless");
-        return new ChromeDriver(chromeOptions);
-    }
-
-    private void closeWebDriver(WebDriver driver) {
-        driver.quit();
-    }
 
     public List<NovelData> crawl() {
         List<NovelData> novels = new ArrayList<>();
@@ -41,8 +25,8 @@ public class KakaoPageCrawler {
         try {
             String url = BASE_URL + TOP300;
             driver.get(url);
-            scrollPageToBottom(driver);
 
+            scrollPageToBottom(driver);
 
             List<NovelData> list = getKakaoPageData(driver);
             novels.addAll(list);
@@ -94,17 +78,13 @@ public class KakaoPageCrawler {
     }
 
     private void scrollPageToBottom(WebDriver driver) throws InterruptedException {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         while (true) {
             Long lastHeight = (Long) js.executeScript("return document.body.scrollHeight");
             js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
-            Thread.sleep(2000);
-            Long newHeight = (Long) js.executeScript("return document.body.scrollHeight");
-
-            if (newHeight.equals(lastHeight)) {
-                break;
-            }
+            wait.until(webDriver -> (Long) js.executeScript("return document.body.scrollHeight") != lastHeight);
         }
     }
 
@@ -114,12 +94,12 @@ public class KakaoPageCrawler {
             String detailURL = String.format("%s/content/%s?tab_type=about", BASE_URL, productId);
             driver.get(detailURL);
 
-            Thread.sleep(2000);
-            WebElement summary = driver.findElement(By.xpath("//*[@id=\"__next\"]/div/div[2]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/span"));
-
+            By summaryLocator = By.xpath("//*[@id=\"__next\"]/div/div[2]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/span");
+            waitForElement(driver, summaryLocator);
+            WebElement summary = driver.findElement(summaryLocator);
 
             return summary.getText();
-        } catch (TimeoutException | InterruptedException e) {
+        } catch (TimeoutException e) {
             throw new RuntimeException(e);
         }
     }
