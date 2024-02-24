@@ -1,6 +1,7 @@
 package com.example.contenthub.crawling.novel;
 
 import com.example.contenthub.crawling.SiteDTO;
+import com.example.contenthub.crawling.WebDriverUtils;
 import org.jsoup.Jsoup;
 
 import org.jsoup.nodes.Document;
@@ -21,22 +22,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.example.contenthub.crawling.WebDriverUtils.closeWebDriver;
+import static com.example.contenthub.crawling.WebDriverUtils.createWebDriver;
+
 @Component
 public class NaverSeriesCrawler {
     final static String BASE_URL = "https://series.naver.com";
     final static String TOP100 = "/novel/top100List.series?rankingTypeCode=DAILY&categoryCode=ALL&page=";
-
-    private WebDriver createWebDriver() {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver.exe");
-        ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-        chromeOptions.addArguments("--headless");
-        return new ChromeDriver(chromeOptions);
-    }
-
-    private void closeWebDriver(WebDriver driver) {
-        driver.quit();
-    }
 
     public List<NovelData> crawl() {
         List<NovelData> novels = new ArrayList<>();
