@@ -2,9 +2,11 @@ package com.example.contenthub.crawling.novel;
 
 import com.example.contenthub.crawling.SiteDTO;
 
+import com.example.contenthub.login.NaverSeriesLogin;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -18,6 +20,10 @@ import static com.example.contenthub.crawling.WebDriverUtils.*;
 
 @Component
 public class NaverSeriesCrawler {
+
+    @Autowired
+    NaverSeriesLogin naverLogin;
+
     final static String BASE_URL = "https://series.naver.com";
     final static String TOP100 = "/novel/top100List.series?rankingTypeCode=DAILY&categoryCode=ALL&page=";
 
@@ -29,9 +35,13 @@ public class NaverSeriesCrawler {
             for (int i = 1; i < 6; i++) {
                 String url = BASE_URL + TOP100 + i;
                 driver.get(url);
-
-
                 wait.until(ExpectedConditions.urlToBe(url));
+
+                naverLogin.activateBot(driver);
+
+                // 로그인 후에 크롤링할 페이지로 이동
+                driver.get(url);
+
                 List<NovelData> list = getNaverSeriesData(driver);
                 novels.addAll(list);
             }
