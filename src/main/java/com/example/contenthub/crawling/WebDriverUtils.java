@@ -16,7 +16,7 @@ public class WebDriverUtils {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver.exe");
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-        chromeOptions.addArguments("--headless");
+        //chromeOptions.addArguments("--headless");
         WebDriver driver = new ChromeDriver(chromeOptions);
         return driver;
     }
