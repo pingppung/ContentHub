@@ -63,4 +63,10 @@ public class NovelData {
     public boolean isAdultContent() {
         return adultContent;
     }
+
+    public boolean hasSite(String siteName) {
+        return site.stream()
+                .map(SiteDTO::getSiteName)
+                .anyMatch(name -> name.contains(siteName));
+    }
 }

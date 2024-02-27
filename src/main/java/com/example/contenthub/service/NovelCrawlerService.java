@@ -47,6 +47,11 @@ public class NovelCrawlerService {
         }
     }
 
+    public boolean isDataExist(String title, String site) {
+        NovelData novelData = novelRepository.findByTitle(title);
+        return novelData != null && novelData.hasSite(site);
+    }
+
     public List<NovelData> getAllData() {
         return novelRepository.findAll();
     }
