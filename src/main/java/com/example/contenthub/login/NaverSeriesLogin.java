@@ -20,7 +20,9 @@ public class NaverSeriesLogin {
     @Value("${naver.service.pwd}")
     private String naverPwd;
 
+
     // https://nid.naver.com/nidlogin.login 네이버 로그인 url
+
     public void activateBot(WebDriver driver) {
 
         try {
@@ -29,7 +31,6 @@ public class NaverSeriesLogin {
 
             WebElement loginLink = wait.until(ExpectedConditions.elementToBeClickable(By.className("gnb_btn_login")));
             loginLink.click();
-
             // 아이디 입력
             WebElement id = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("id")));
             //id.sendKeys(naverId);
@@ -47,7 +48,7 @@ public class NaverSeriesLogin {
 
             loginButton.click();
 
-            wait.until(ExpectedConditions.urlContains("/novel/top100List.series?rankingTypeCode=DAILY&categoryCode=ALL&page="));
+            wait.until(ExpectedConditions.urlContains("/novel"));
         } catch (Exception e) {
             e.printStackTrace();
         }
