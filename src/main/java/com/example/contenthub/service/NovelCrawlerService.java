@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.example.contenthub.crawling.SiteDTO;
+import com.example.contenthub.crawling.novel.KakaoPageCrawler;
 import com.example.contenthub.crawling.novel.NaverSeriesCrawler;
 import com.example.contenthub.crawling.novel.NovelData;
 import com.example.contenthub.repository.NovelRepository;
@@ -23,12 +24,15 @@ public class NovelCrawlerService {
     @Autowired
     private NaverSeriesCrawler naverSeriesCrawler;
 
-    public void crawl() throws IOException {
-        List<NovelData> naverSeriesNovels = naverSeriesCrawler.crawl();
-        //List<NovelData> ridiBooksNovels = ridiBooksCrawler.crawl();
+    @Autowired
+    private KakaoPageCrawler kakaoPageCrawler;
 
-        saveNovels(naverSeriesNovels);
-        //saveNovels(ridiBooksNovels);
+    public void crawl() throws IOException {
+        //List<NovelData> naverSeriesNovels = naverSeriesCrawler.crawl();
+        List<NovelData> kakaoPageNovels = kakaoPageCrawler.crawl();
+
+        //saveNovels(naverSeriesNovels);
+        saveNovels(kakaoPageNovels);
     }
 
     public void saveNovels(List<NovelData> novels) {

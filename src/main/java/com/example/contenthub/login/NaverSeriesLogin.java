@@ -21,8 +21,6 @@ public class NaverSeriesLogin {
     private String naverPwd;
 
 
-    // https://nid.naver.com/nidlogin.login 네이버 로그인 url
-
     public void activateBot(WebDriver driver) {
 
         try {
