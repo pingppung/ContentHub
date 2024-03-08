@@ -30,7 +30,7 @@ class HubController {
     // 해당 위치에 들어갈때마다 크롤링으로 인한 속도 문제로 빠른 테스트 진행을 위해 잠깐 주석처리해놓음
     @GetMapping("/api/series")
     public void crawl() throws IOException {
-        novelCrawlerService.crawl();
+        //novelCrawlerService.crawl();
     }
 
     @GetMapping("/novel/search")
