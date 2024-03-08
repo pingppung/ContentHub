@@ -31,7 +31,6 @@ class HubController {
     @GetMapping("/api/series")
     public void crawl() throws IOException {
         novelCrawlerService.crawl();
-        //System.out.println("hi");
     }
 
     @GetMapping("/novel/search")
