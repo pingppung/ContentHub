@@ -2,7 +2,7 @@ package com.example.contenthub.crawling.novel;
 
 import com.example.contenthub.crawling.SiteDTO;
 
-import com.example.contenthub.login.CookieManager;
+import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.login.NaverSeriesLogin;
 import com.example.contenthub.service.NovelCrawlerService;
 import org.openqa.selenium.*;
@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +23,6 @@ import static com.example.contenthub.crawling.WebDriverUtils.*;
 
 @Component
 public class NaverSeriesCrawler {
-
     @Autowired
     NaverSeriesLogin naverLogin;
 
@@ -32,9 +30,7 @@ public class NaverSeriesCrawler {
     @Lazy
     NovelCrawlerService novelCrawlerService;
 
-
-    final static String BASE_URL = "https://series.naver.com";
-    final static String TOP100 = "/novel/top100List.series?";
+    final static String BASE_URL = "https://series.naver.com/novel/top100List.series?";
     final static String TYPECODEPARAM = "rankingTypeCode=HOURLY";
     final static String CATEGORYCODEPARAM = "categoryCode=ALL";
     final static String PAGEPARAM = "page=";
@@ -44,29 +40,18 @@ public class NaverSeriesCrawler {
         WebDriver driver = createWebDriver();
         WebDriver detailDriver = createWebDriver();
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            String url = BASE_URL + TOP100 + TYPECODEPARAM + "&" + CATEGORYCODEPARAM;
-
-            driver.get(BASE_URL);
-            detailDriver.get(url);
-            WebElement closeButtonLeft = driver.findElement(By.className("close_btn_left"));
-            if (closeButtonLeft.isDisplayed()) {
-                // 버튼이 보이면 클릭
-                closeButtonLeft.click();
-            }
-            naverLogin.activateBot(driver); //일단 커버이미지 때문에 로그인 상태로 만들어놓음
-            naverLogin.activateBot(detailDriver);
-//            CookieManager.saveCookies(driver, "NaverSeries.data");
+            setUpDrivers(driver, detailDriver);
 
             for (int i = 1; i < 6; i++) {
-                driver.get(url + "&" + PAGEPARAM + i);
-                wait.until(ExpectedConditions.urlToBe(url + "&" + PAGEPARAM + i));
+                navigateToPage(driver, i);
 
                 List<NovelData> list = getNaverSeriesData(driver, detailDriver);
                 novels.addAll(list);
             }
-        } catch (TimeoutException | InterruptedException e) {
-            throw new RuntimeException(e);
+        } catch (TimeoutException e) {
+            throw new CrawlerException(CrawlerException.ExceptionMessage.TIMEOUT_EXCEPTION.getMessage(), e);
+        } catch (InterruptedException e) {
+            throw new CrawlerException(CrawlerException.ExceptionMessage.UNEXPECTED_EXCEPTION.getMessage(), e);
         } finally {
             closeWebDriver(driver);
             closeWebDriver(detailDriver);
@@ -74,33 +59,45 @@ public class NaverSeriesCrawler {
         return novels;
     }
 
+    private void setUpDrivers(WebDriver driver, WebDriver detailDriver) {
+        driver.get(BASE_URL);
+        detailDriver.get(BASE_URL + TYPECODEPARAM + "&" + CATEGORYCODEPARAM);
+        naverLogin.activateBot(driver);
+        naverLogin.activateBot(detailDriver);
+    }
+
+    private void navigateToPage(WebDriver driver, int page) {
+        String url = BASE_URL + TYPECODEPARAM + "&" + CATEGORYCODEPARAM + "&" + PAGEPARAM + page;
+        driver.get(url);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlToBe(url));
+    }
+
     private List<NovelData> getNaverSeriesData(WebDriver driver, WebDriver detailDriver) throws InterruptedException {
-
-
         List<NovelData> novels = new ArrayList<>();
         List<WebElement> novelElements = driver.findElements(By.xpath("//*[@id=\"content\"]/div/ul/li"));
         for (WebElement element : novelElements) {
-            WebElement novel = element.findElement(By.xpath(".//div[2]/h3/a"));
-            String title = extractTitle(novel.getText());
-            if (novelCrawlerService.isDataExist(title, NovelSite.NAVER_SERIES.getName())) continue;
-
-            String detailHref = novel.getAttribute("href");
-            String productId = extractProductId(detailHref);
-
-
-            boolean adultContent = isAdultContent(element);
-
-            WebElement coverImgElement = element.findElement(By.xpath(".//a/img"));
-            String coverImg = coverImgElement.getAttribute("src");
-            String summary = element.findElement(By.xpath(".//div[2]/p[2]")).getText();
-
-            String genre = getNovelGenre(detailDriver, detailHref, adultContent);
-
-            NovelData novelData = new NovelData(title, coverImg, summary, genre, Arrays.asList(new SiteDTO(NovelSite.NAVER_SERIES.getName(), productId)), adultContent);
-
-            novels.add(novelData);
+            NovelData novelData = extractNovelData(element, detailDriver);
+            if (novelData != null) novels.add(novelData);
         }
         return novels;
+    }
+
+    private NovelData extractNovelData(WebElement element, WebDriver detailDriver) {
+        WebElement novel = element.findElement(By.xpath(".//div[2]/h3/a"));
+        String title = extractTitle(novel.getText());
+        if (novelCrawlerService.isDataExist(title, NovelSite.NAVER_SERIES.getName())) return null;
+
+        String detailHref = novel.getAttribute("href");
+        String productId = extractProductId(detailHref);
+        boolean adultContent = isAdultContent(element);
+        WebElement coverImgElement = element.findElement(By.xpath(".//a/img"));
+        String coverImg = coverImgElement.getAttribute("src");
+        String summary = element.findElement(By.xpath(".//div[2]/p[2]")).getText();
+        String genre = getNovelGenre(detailDriver, detailHref, adultContent);
+
+        return new NovelData(title, coverImg, summary, genre,
+                Arrays.asList(new SiteDTO(NovelSite.NAVER_SERIES.getName(), productId)), adultContent);
     }
 
     private String getNovelGenre(WebDriver driver, String href, boolean isAdult) {
@@ -108,21 +105,14 @@ public class NaverSeriesCrawler {
             String detailURL = href;
 
             driver.get(detailURL);
-//            if (isAdult) {
-//                //CookieManager.loadCookies(driver, "NaverSeries.data");
-//                driver.get(detailURL);
-//            }
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"content\"]/ul[1]/li/ul/li[2]/span/a")));
-
             By genreLocator = By.xpath("//*[@id=\"content\"]/ul[1]/li/ul/li[2]/span/a");
-            //waitForElement(driver, genreLocator);
-            WebElement genreElement = driver.findElement(genreLocator);
+            WebElement genreElement = wait.until(ExpectedConditions.presenceOfElementLocated(genreLocator));
 
             return genreElement.getText();
         } catch (TimeoutException e) {
-            throw new RuntimeException(e);
+            throw new CrawlerException(CrawlerException.ExceptionMessage.TIMEOUT_EXCEPTION.getMessage(), e);
         }
     }
 
