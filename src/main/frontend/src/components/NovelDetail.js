@@ -24,7 +24,7 @@ function NovelDetail({ novelInfo, open, close }) {
       const siteInfo = Object.values(NovelSite).find(site => site.name === siteName);
       console.log(siteInfo);
       if (siteInfo) {
-          return siteInfo.baseUrl ;
+          return siteInfo.baseUrl;
       } else {
           return 'Unknown site';
       }
