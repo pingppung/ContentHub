@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import styles from "./Search.module.css";
+import styles from "./css/Search.module.css";
 
 function Search({ handleTitleInput}) {
     const [input, setInput] = useState("");
