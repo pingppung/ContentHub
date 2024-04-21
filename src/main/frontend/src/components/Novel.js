@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import styles from "./Novel.module.css";
+import styles from "./css/Novel.module.css";
 
 function Novel({ title, coverImg, summary, genre, adultContent, openNovelDetail }) {
   const handleClick = () => {

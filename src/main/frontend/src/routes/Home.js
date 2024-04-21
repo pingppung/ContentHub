@@ -5,7 +5,7 @@ function Home() {
   const [data, setDate] = useState([]);
   useEffect(() => {
     axios
-      .get("/api/series")
+      .get("/api/crawler")
       .then((res) => {
         setDate(res.data);
         setLoading(false);
@@ -21,7 +21,7 @@ function Home() {
     ) : (
       <div className="btn">
         <a href="/novel" className="novel">
-          <span className="WEBnovel">웹소설</span>
+          <span className="webNovel">웹소설</span>
         </a>
       </div>
       )}

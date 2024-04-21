@@ -26,9 +26,9 @@
 
 .hearder{
   display: flex;
-    justify-content: space-between;
-    align-items: center;
+  justify-content: space-between;
+  align-items: center;
 }
-.header .genreButtons {
-display: inline-block;
+.header {
+   display: inline-block;
 }

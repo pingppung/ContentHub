@@ -1,6 +1,7 @@
 package com.example.contenthub.crawling.novel;
 
-import com.example.contenthub.crawling.SiteDTO;
+import com.example.contenthub.constants.SiteType;
+import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.login.KakaoPageLogin;
 import com.example.contenthub.service.NovelCrawlerService;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -30,14 +30,14 @@ public class KakaoPageCrawler {
     NovelCrawlerService novelCrawlerService;
     final static String BASE_URL = "https://page.kakao.com/menu/10011/screen/94";
 
-    public List<NovelData> crawl() {
-        List<NovelData> novels = new ArrayList<>();
+    public List<ContentDTO> crawl() {
+        List<ContentDTO> novels = new ArrayList<>();
         WebDriver driver = createWebDriver();
         WebDriver detailDriver = createWebDriver();
         try {
             setUpDrivers(driver, detailDriver);
             scrollPageToBottom(driver);
-            List<NovelData> list = getKakaoPageData(driver, detailDriver);
+            List<ContentDTO> list = getKakaoPageData(driver, detailDriver);
             novels.addAll(list);
         } catch (TimeoutException e) {
             throw new CrawlerException(CrawlerException.ExceptionMessage.TIMEOUT_EXCEPTION.getMessage(), e);
@@ -47,8 +47,6 @@ public class KakaoPageCrawler {
             closeWebDriver(driver);
             closeWebDriver(detailDriver);
         }
-
-
         return novels;
     }
 
@@ -74,18 +72,18 @@ public class KakaoPageCrawler {
         }
     }
 
-    private List<NovelData> getKakaoPageData(WebDriver driver, WebDriver detailDriver) {
-        List<NovelData> novels = new ArrayList<>();
+    private List<ContentDTO> getKakaoPageData(WebDriver driver, WebDriver detailDriver) {
+        List<ContentDTO> novels = new ArrayList<>();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         List<WebElement> novelElements = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//*[@id=\"__next\"]/div/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div/div")));
         for (WebElement element : novelElements) {
-            NovelData novelData = extractNovelData(element, detailDriver);
-            if (novelData != null) novels.add(novelData);
+            ContentDTO contentData = extractNovelData(element, detailDriver);
+            if (contentData != null) novels.add(contentData);
         }
         return novels;
     }
 
-    private NovelData extractNovelData(WebElement element, WebDriver detailDriver) {
+    private ContentDTO extractNovelData(WebElement element, WebDriver detailDriver) {
         WebElement novel = element.findElement(By.xpath(".//div/a/div"));
         String jsonString = novel.getAttribute("data-t-obj");
         Gson gson = new Gson();
@@ -95,7 +93,7 @@ public class KakaoPageCrawler {
         String productId = eventMeta.get("id");
         String title = eventMeta.get("name");
 
-        if (novelCrawlerService.isDataExist(title, NovelSite.KAKAO_PAGE.getName())) return null;
+        if (novelCrawlerService.isDataExist(title, SiteType.KAKAO_PAGE.getName())) return null;
 
         String genre = eventMeta.get("subcategory");
         WebElement imgDiv = novel.findElement(By.xpath(".//div/div/img"));
@@ -103,8 +101,7 @@ public class KakaoPageCrawler {
         boolean adultContent = isAdultContent(element);
         String summary = getNovelSummary(detailDriver, productId);
 
-        return new NovelData(title, coverImg, summary, genre,
-                Arrays.asList(new SiteDTO(NovelSite.KAKAO_PAGE.getName(), productId)), adultContent);
+        return new ContentDTO(title, coverImg, summary, genre, adultContent, productId);
     }
 
     private boolean isAdultContent(WebElement element) {
@@ -119,9 +116,8 @@ public class KakaoPageCrawler {
 
     private String getNovelSummary(WebDriver driver, String productId) {
         try {
-            String detailURL = String.format("%s/content/%s?tab_type=about", BASE_URL, productId);
+            String detailURL = String.format("%s/content/%s?tab_type=about", "https://page.kakao.com", productId);
             driver.get(detailURL);
-
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             By summaryLocator = By.xpath("//*[@id=\"__next\"]/div/div[2]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/span");
             WebElement summary = wait.until(ExpectedConditions.visibilityOfElementLocated(summaryLocator));

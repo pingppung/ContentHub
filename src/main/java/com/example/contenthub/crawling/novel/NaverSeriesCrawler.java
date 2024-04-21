@@ -1,6 +1,7 @@
 package com.example.contenthub.crawling.novel;
 
-import com.example.contenthub.crawling.SiteDTO;
+import com.example.contenthub.constants.SiteType;
+import com.example.contenthub.dto.ContentDTO;
 
 import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.login.NaverSeriesLogin;
@@ -13,9 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +34,8 @@ public class NaverSeriesCrawler {
     final static String CATEGORYCODEPARAM = "categoryCode=ALL";
     final static String PAGEPARAM = "page=";
 
-    public List<NovelData> crawl() {
-        List<NovelData> novels = new ArrayList<>();
+    public List<ContentDTO> crawl() {
+        List<ContentDTO> novels = new ArrayList<>();
         WebDriver driver = createWebDriver();
         WebDriver detailDriver = createWebDriver();
         try {
@@ -45,7 +44,7 @@ public class NaverSeriesCrawler {
             for (int i = 1; i < 6; i++) {
                 navigateToPage(driver, i);
 
-                List<NovelData> list = getNaverSeriesData(driver, detailDriver);
+                List<ContentDTO> list = getNaverSeriesData(driver, detailDriver);
                 novels.addAll(list);
             }
         } catch (TimeoutException e) {
@@ -73,20 +72,20 @@ public class NaverSeriesCrawler {
         wait.until(ExpectedConditions.urlToBe(url));
     }
 
-    private List<NovelData> getNaverSeriesData(WebDriver driver, WebDriver detailDriver) throws InterruptedException {
-        List<NovelData> novels = new ArrayList<>();
+    private List<ContentDTO> getNaverSeriesData(WebDriver driver, WebDriver detailDriver) throws InterruptedException {
+        List<ContentDTO> novels = new ArrayList<>();
         List<WebElement> novelElements = driver.findElements(By.xpath("//*[@id=\"content\"]/div/ul/li"));
         for (WebElement element : novelElements) {
-            NovelData novelData = extractNovelData(element, detailDriver);
-            if (novelData != null) novels.add(novelData);
+            ContentDTO contentData = extractNovelData(element, detailDriver);
+            if (contentData != null) novels.add(contentData);
         }
         return novels;
     }
 
-    private NovelData extractNovelData(WebElement element, WebDriver detailDriver) {
+    private ContentDTO extractNovelData(WebElement element, WebDriver detailDriver) {
         WebElement novel = element.findElement(By.xpath(".//div[2]/h3/a"));
         String title = extractTitle(novel.getText());
-        if (novelCrawlerService.isDataExist(title, NovelSite.NAVER_SERIES.getName())) return null;
+        if (novelCrawlerService.isDataExist(title, SiteType.NAVER_SERIES.getName())) return null;
 
         String detailHref = novel.getAttribute("href");
         String productId = extractProductId(detailHref);
@@ -96,8 +95,7 @@ public class NaverSeriesCrawler {
         String summary = element.findElement(By.xpath(".//div[2]/p[2]")).getText();
         String genre = getNovelGenre(detailDriver, detailHref, adultContent);
 
-        return new NovelData(title, coverImg, summary, genre,
-                Arrays.asList(new SiteDTO(NovelSite.NAVER_SERIES.getName(), productId)), adultContent);
+        return new ContentDTO(title, coverImg, summary, genre, adultContent, productId);
     }
 
     private String getNovelGenre(WebDriver driver, String href, boolean isAdult) {

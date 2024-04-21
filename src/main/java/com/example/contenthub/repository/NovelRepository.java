@@ -1,19 +1,19 @@
 package com.example.contenthub.repository;
 
-import com.example.contenthub.crawling.novel.NovelData;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import com.example.contenthub.entity.Novel;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface NovelRepository extends MongoRepository<NovelData, String> {
+public interface NovelRepository extends JpaRepository<Novel, Long> {
 
-    List<NovelData> findByGenre(String genre);
+    List<Novel> findByGenre(String genre);
 
-    NovelData findByTitle(String title);
+    Novel findByTitle(String title);
 
     void deleteByTitle(String title);
 
-    List<NovelData> findByTitleContaining(String word);
+    List<Novel> findByTitleContaining(String word);
 }
