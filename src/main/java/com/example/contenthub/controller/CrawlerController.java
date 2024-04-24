@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.example.contenthub.entity.Novel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,8 +30,8 @@ class CrawlerController {
         return novelCrawlerService.getDataByGenre(genre);
     }
 
-    // 해당 위치에 들어갈때마다 크롤링으로 인한 속도 문제로 빠른 테스트 진행을 위해 잠깐 주석처리해놓음
     @GetMapping("/api/crawler")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
     public void crawl() throws IOException {
         novelCrawlerService.crawl();
     }
