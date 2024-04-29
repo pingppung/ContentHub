@@ -2,7 +2,6 @@ package com.example.contenthub.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.example.contenthub.dto.ContentDTO;
@@ -15,7 +14,6 @@ import com.example.contenthub.entity.Site;
 import com.example.contenthub.repository.NovelRepository;
 import com.example.contenthub.repository.NovelSiteRepository;
 import com.example.contenthub.repository.SiteRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +23,8 @@ public class NovelCrawlerService {
 
     private final NovelRepository novelRepository;
     private final SiteRepository siteRepository;
-    private NovelSiteRepository novelSiteRepository;
+    private final NovelSiteRepository novelSiteRepository;
 
-    @Autowired
     public NovelCrawlerService(NovelRepository novelRepository, SiteRepository siteRepository, NovelSiteRepository novelSiteRepository) {
         this.novelRepository = novelRepository;
         this.siteRepository = siteRepository;
@@ -41,10 +38,10 @@ public class NovelCrawlerService {
     private KakaoPageCrawler kakaoPageCrawler;
 
     public void crawl() throws IOException {
-        //List<ContentDTO> naverSeriesNovels = naverSeriesCrawler.crawl();
+        List<ContentDTO> naverSeriesNovels = naverSeriesCrawler.crawl();
         List<ContentDTO> kakaoPageNovels = kakaoPageCrawler.crawl();
 
-        // saveNovels(naverSeriesNovels, "네이버시리즈");
+        saveNovels(naverSeriesNovels, "네이버시리즈");
         saveNovels(kakaoPageNovels, "카카오페이지");
     }
 

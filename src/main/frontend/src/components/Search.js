@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import styles from "./css/Search.module.css";
 
-function Search({ handleTitleInput}) {
-    const [input, setInput] = useState("");
+function Search({ handleTitleInput }) {
+  const [input, setInput] = useState("");
   const handleInputChange = (event) => {
     setInput(event.target.value);
   };
@@ -17,7 +16,8 @@ function Search({ handleTitleInput}) {
       />
       <img
         src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"
-        onClick={() => handleTitleInput(input)}/>
+        onClick={() => handleTitleInput(input)}
+      />
     </div>
   );
 }
