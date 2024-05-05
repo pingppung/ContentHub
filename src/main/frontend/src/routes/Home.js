@@ -3,12 +3,14 @@ import axios from "axios";
 import Header from "../components/Header";
 import styles from "./Home.module.css";
 
-function Home() {
+function Home({ name, loggedIn, setLoggedIn }) {
   const [loading, setLoading] = useState(true);
   const [data, setDate] = useState([]);
+
   useEffect(() => {
     setLoading(false);
   }, []);
+
   return (
     <div className={styles.relactive}>
       {loading ? (
@@ -16,7 +18,7 @@ function Home() {
           <span>Loading...</span>
         </div>
       ) : (
-        <Header />
+        <Header name={name} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
       )}
     </div>
   );

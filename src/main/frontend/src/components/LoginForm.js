@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from "../services/UserService";
 import styles from "./css/LoginForm.module.css";
-import axios from "axios";
 
-function LoginForm() {
+function LoginForm({ setLoggedIn, setUserName }) {
   const [name, setName] = useState("");
   const [pwd, setPwd] = useState("");
   const navigate = useNavigate();
@@ -18,12 +17,13 @@ function LoginForm() {
     UserService.login(user)
       .then((res) => {
         console.log(res);
-        //UserService.fetchToken(response.data);
-        // localStorage.setItem("acessToken", JSON.stringify(response.data));
+        UserService.fetchToken(res.data.token);
+        setLoggedIn(true);
+        setUserName(name);
         navigate(`/`);
       })
       .catch((error) => {
-        console.log("error");
+        console.log(error);
         window.alert("아이디나 비밀번호가 다릅니다");
       });
   };

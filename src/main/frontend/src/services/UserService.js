@@ -2,10 +2,23 @@ import axios from "axios";
 
 class UserService {
   fetchToken(token) {
-    //localStorage.setItem("token", token);
+    localStorage.setItem("accessToken", token);
     console.log(" token is " + token);
   }
-
+  getToken() {
+    return localStorage.getItem("accessToken");
+  }
+  removeToken() {
+    localStorage.removeItem("accessToken");
+  }
+  verifyToken(token) {
+    return axios.get("/auth/verifyToken", {
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    });
+  }
   getUserName() {
     axios.get("/authenticate", {
       headers: {

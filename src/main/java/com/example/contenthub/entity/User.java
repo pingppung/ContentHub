@@ -1,11 +1,16 @@
 package com.example.contenthub.entity;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Entity
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "user")
 public class User {
     @Id
