@@ -1,11 +1,7 @@
 package com.example.contenthub.entity;
 
-import com.example.contenthub.constants.SiteType;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
-import org.apache.ibatis.annotations.One;
-
 import java.util.ArrayList;
 import java.util.List;
 

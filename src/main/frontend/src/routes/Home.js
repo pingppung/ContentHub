@@ -1,32 +1,27 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-function Home() {
+import Header from "../components/Header";
+import styles from "./Home.module.css";
+
+function Home({ name, loggedIn, setLoggedIn }) {
   const [loading, setLoading] = useState(true);
   const [data, setDate] = useState([]);
+
   useEffect(() => {
-    axios
-      .get("/api/crawler")
-      .then((res) => {
-        setDate(res.data);
-        setLoading(false);
-      })
-      .catch((err) => console.log(err));
+    setLoading(false);
   }, []);
-    return (
-    <>
-    {loading ? (
-            <div className={"loader"}>
-              <span>Loading...</span>
-            </div>
-    ) : (
-      <div className="btn">
-        <a href="/novel" className="novel">
-          <span className="webNovel">웹소설</span>
-        </a>
-      </div>
+
+  return (
+    <div className={styles.relactive}>
+      {loading ? (
+        <div className={"loader"}>
+          <span>Loading...</span>
+        </div>
+      ) : (
+        <Header name={name} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
       )}
-    </>
-    );
+    </div>
+  );
 }
 
 export default Home;

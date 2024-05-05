@@ -1,0 +1,58 @@
+/* 로그인 컨테이너 스타일 */
+.container {
+  width: 100%;
+  max-width: 400px;
+  margin: 150px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.loginText {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+#form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 2px solid;
+  border-radius: 4px;
+}
+
+.loginBtn {
+  background: #000000;
+  color: white;
+  display: block;
+  width: 92.5%;
+  max-width: 680px;
+  height: 50px;
+  border-radius: 8px;
+  margin: 0 auto;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  transition: 0.2s linear;
+}
+
+.signupBtn {
+  padding: 30px 0;
+}
+.signupBtn a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signupBtn a:hover {
+  text-decoration: underline;
+}

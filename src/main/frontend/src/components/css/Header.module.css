@@ -1,0 +1,48 @@
+.header_container {
+  width: 1200px;
+  height: 96px;
+  padding: 0px 40px;
+  z-index: 100;
+  background-color: rgb(255, 255, 255);
+  box-sizing: border-box;
+  padding-left: 1.875rem;
+  padding-right: 1.875rem;
+  display: flex;
+  /* justify-content: space-between; */
+}
+
+img {
+  width: 150px;
+  object-fit: contain;
+}
+
+ul {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  gap: 20px;
+  height: 100%;
+  padding: 0 50px;
+  margin: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
+li a {
+  font-size: 15px;
+  font-weight: 600;
+  color: black;
+  text-decoration: inherit;
+}
+li a:hover,
+li.select a {
+  color: #8f8ff7;
+}
+
+button.login {
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
