@@ -4,7 +4,10 @@ import Home from "./routes/Home";
 import NovelHome from "./routes/NovelHome";
 import LoginForm from "./components/LoginForm";
 import SignupForm from "./components/SignUpForm";
+import MyPage from "./components/MyPage";
 import UserService from "./services/UserService";
+import PrivateRoute from "./routes/PrivateRoute";
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [name, setName] = useState("");
@@ -39,6 +42,10 @@ function App() {
             <Home name={name} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
           }
         />
+        <Route element={<PrivateRoute redirectPath="/login"/>} >
+          <Route path="/user" element={<MyPage />} /> 
+          <Route path="/admin" element={<MyPage />} />
+        </Route>
       </Routes>
     </Router>
   );

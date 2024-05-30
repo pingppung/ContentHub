@@ -1,5 +1,7 @@
 package com.example.contenthub.entity;
 
+import java.sql.Timestamp;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,9 +20,15 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column (name = "name")
+    @Column(name = "name")
     private String userName;
 
-    @Column (name = "password")
+    @Column(name = "password")
     private String userPwd;
+
+    // @Column(name = "role")
+    // private String role;// ROLE_USER, ROLE_ADMIN
+
+    // @Column(name = "createDate")
+    // private Timestamp createDate;
 }

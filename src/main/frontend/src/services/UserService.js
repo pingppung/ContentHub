@@ -3,7 +3,6 @@ import axios from "axios";
 class UserService {
   fetchToken(token) {
     localStorage.setItem("accessToken", token);
-    console.log(" token is " + token);
   }
   getToken() {
     return localStorage.getItem("accessToken");
@@ -17,13 +16,7 @@ class UserService {
         "content-type": "application/json",
         Authorization: "Bearer " + token,
       },
-    });
-  }
-  getUserName() {
-    axios.get("/authenticate", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
+      withCredentials: true,
     });
   }
   login(user) {
@@ -37,10 +30,8 @@ class UserService {
     });
   }
 
-  getUserById(id) {
-    return axios.get("/auth/getUser", {
-      params: { user_id: id },
-    });
+  gotoMyPage() {
+    return axios.get("/authenticate");
   }
 }
 
