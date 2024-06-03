@@ -11,8 +11,8 @@ function SignupForm() {
   const handleSignUp = (event) => {
     event.preventDefault();
     let user = {
-      userName: name,
-      userPwd: pwd,
+      username: name,
+      password: pwd,
     };
     UserService.signUp(user)
       .then((res) => {

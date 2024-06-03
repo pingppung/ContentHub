@@ -6,9 +6,10 @@ import org.springframework.stereotype.Repository;
 import com.example.contenthub.entity.User;
 import java.util.List;
 
-
+//CRUD를 JpaRepository가 들고 있음
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUserName(String userName);
-    User findByUserNameAndUserPwd(String userName, String userPwd);
+    User findByUsername(String username);
+
+    User findByUsernameAndPassword(String username, String password);
 }

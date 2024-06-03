@@ -3,7 +3,6 @@ import axios from "axios";
 class UserService {
   fetchToken(token) {
     localStorage.setItem("accessToken", token);
-    console.log(" token is " + token);
   }
   getToken() {
     return localStorage.getItem("accessToken");
@@ -17,18 +16,28 @@ class UserService {
         "content-type": "application/json",
         Authorization: "Bearer " + token,
       },
+      withCredentials: true,
     });
   }
-  getUserName() {
-    axios.get("/authenticate", {
+  verifyAuth(token) {
+    return axios.get("/auth/verifyAuth", {
       headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
+        "content-type": "application/json",
+        Authorization: "Bearer " + token,
       },
+      withCredentials: true,
     });
   }
   login(user) {
-    return axios.post("/auth/login", JSON.stringify(user), {
+    axios.post("/login", user, {
       headers: { "Content-Type": `application/json` },
+      withCredentials: true,
+    }).then((res) => {
+      const authHeader = res.headers.authorization;
+      
+      console.log(res);
+      const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
+      this.fetchToken(token);
     });
   }
   signUp(user) {
@@ -37,10 +46,8 @@ class UserService {
     });
   }
 
-  getUserById(id) {
-    return axios.get("/auth/getUser", {
-      params: { user_id: id },
-    });
+  gotoMyPage() {
+    return axios.get("/authenticate");
   }
 }
 

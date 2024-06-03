@@ -1,43 +1,140 @@
 package com.example.contenthub.config;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
+import com.example.contenthub.config.auth.PrincipalDetailsService;
+import com.example.contenthub.config.jwt.JwtAuthenticationFilter;
+import com.example.contenthub.config.jwt.JwtAuthorizationFilter;
+import com.example.contenthub.repository.UserRepository;
+
+import io.jsonwebtoken.io.IOException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Configuration
+@EnableWebSecurity // Spring Security filter가 spring filterchain에 등록
+@RequiredArgsConstructor
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    //사용자의 인증을 처리
+    private final CorsFilter corsFilter;
+    private final PrincipalDetailsService principalDetailsService;
+    private final UserRepository userRepository;
+
+    // 사용자가 제공한 비밀번호를 암호화하여 저장하고, 인증 시 저장된 비밀번호와 사용자가 제공한 비밀번호를 비교하여 일치 여부를 확인
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
-    //사용자가 제공한 비밀번호를 암호화하여 저장하고, 인증 시 저장된 비밀번호와 사용자가 제공한 비밀번호를 비교하여 일치 여부를 확인
     @Bean
-    public PasswordEncoder passwordEncoder(){
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder sharedObject = http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        sharedObject.userDetailsService(this.principalDetailsService);
+        AuthenticationManager authenticationManager = sharedObject.build();
+
+        http.authenticationManager(authenticationManager);
+        http.csrf(CsrfConfigurer::disable)
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .addFilter(corsFilter) // 1. 컨트롤러에 @CrossOrigin 하는 방법 - 인증 X, 2. 시큐리티 필터에 등록 - 인증O
+                .addFilter(new JwtAuthenticationFilter(authenticationManager))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
+        http.sessionManagement( // JWT 방식은 세션저장을 사용하지 않기 때문에 꺼주기.
+                sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/manager/**").hasAnyRole("ADMIN", "MANAGER") // 인증뿐만 아니라 권한이 있는 사람만 들어올 수 있다.
+                .requestMatchers("/user/**").authenticated() // 해당 주소로 들어오면 인증이 필요하다.
+                .anyRequest().permitAll());
+        http.formLogin(formLogin -> formLogin
+                .loginPage("/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .loginProcessingUrl("/auth/login") // 주소가 호출되면 시큐리티가 낚아채서 대신 로그인 진행
+                .successHandler(successHandler())
+                .failureHandler(failHandler())
+                // .defaultSuccessUrl("/auth/login")
+                .permitAll());
+        http.logout(logout -> logout
+                .permitAll());
+        //
+        return http.build();
     }
 
-    // 특정 HTTP 요청에 대한 웹 기반 보안 구성
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http	.csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests((authorize) -> authorize
-						.anyRequest().permitAll());
-		return http.build();
-	}
+    @Bean
+    protected AuthenticationSuccessHandler successHandler() {
+        return new AuthenticationSuccessHandler() {
+            @Override
+            public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                    Authentication authentication) throws IOException {
+                System.out.println("로그인 성공");
+                System.out.println(request);
 
+                try {
+                    response.sendRedirect("http://localhost:3000/");
+                } catch (java.io.IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        };
+    }
+
+    @Bean
+    protected AuthenticationFailureHandler failHandler() {
+        return new AuthenticationFailureHandler() {
+
+            @Override
+            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+                    AuthenticationException exception) throws java.io.IOException, ServletException {
+                System.out.println("fail");
+                throw new UnsupportedOperationException("Unimplemented method 'onAuthenticationFailure'");
+            }
+
+        };
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setAllowCredentials(true);
+        // exposed-headers 설정
+        config.setExposedHeaders(Arrays.asList("Access-Control-Allow-Headers",
+                "Authorization, x-xsrf-token, Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, " +
+                        "Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }
