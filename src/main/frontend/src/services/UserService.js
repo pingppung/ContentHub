@@ -19,9 +19,25 @@ class UserService {
       withCredentials: true,
     });
   }
+  verifyAuth(token) {
+    return axios.get("/auth/verifyAuth", {
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      withCredentials: true,
+    });
+  }
   login(user) {
-    return axios.post("/auth/login", JSON.stringify(user), {
+    axios.post("/login", user, {
       headers: { "Content-Type": `application/json` },
+      withCredentials: true,
+    }).then((res) => {
+      const authHeader = res.headers.authorization;
+      
+      console.log(res);
+      const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
+      this.fetchToken(token);
     });
   }
   signUp(user) {

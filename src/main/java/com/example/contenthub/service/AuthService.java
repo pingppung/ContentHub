@@ -1,5 +1,6 @@
 package com.example.contenthub.service;
 
+import com.example.contenthub.constants.Role;
 import com.example.contenthub.dto.JwtDto;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
@@ -18,27 +19,29 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtService;
 
     public void saveUser(User request) throws UserException {
-        User existingUser = userRepository.findByUserName(request.getUserName());
+        User existingUser = userRepository.findByUsername(request.getUsername());
         if (existingUser != null) {
             // 이미 존재하는 사용자인 경우 예외 발생
             throw UserException.duplicateUserException();
         }
-        User user = User.builder().userName(request.getUserName()).userPwd(passwordEncoder.encode(request.getUserPwd()))
+        User user = User.builder().username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role("ROLE_USER")
                 .build();
         userRepository.save(user);
         // System.out.println(user.getId());
     }
 
-    public JwtDto authenticate(User request) throws UserException {
-        User user = userRepository.findByUserName(request.getUserName());
-        if (user == null || !passwordEncoder.matches(request.getUserPwd(), user.getUserPwd())) {
-            throw UserException.invalidUserException();
-        }
-        String token = jwtService.generateToken(user.getId(), user.getUserName());
-        return new JwtDto(token);
-    }
+    // public JwtDto authenticate(User request) throws UserException {
+    // User user = userRepository.findByUsername(request.getUsername());
+    // if (user == null || !passwordEncoder.matches(request.getPassword(),
+    // user.getPassword())) {
+    // throw UserException.invalidUserException();
+    // }
+    // // String token = jwtService.generateToken(user.getId(), user.getUsername());
+    // return new JwtDto(token);
+    // }
 
 }

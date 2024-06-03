@@ -14,6 +14,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    // 스프링 MVC 컨트롤러에 대한 요청에만 적용
+    // 스프링 MVC의 핸들러 매핑 전에 적용
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -22,16 +24,4 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-    // @Bean
-    // public CorsFilter corsFilter() {
-    // UrlBasedCorsConfigurationSource source = new
-    // UrlBasedCorsConfigurationSource();
-    // CorsConfiguration config = new CorsConfiguration();
-    // config.setAllowCredentials(true);
-    // config.addAllowedOrigin("http://localhost:3000");
-    // config.addAllowedHeader("*");
-    // config.addAllowedMethod("*");
-    // source.registerCorsConfiguration("/**", config);
-    // return new CorsFilter(source);
-    // }
 }

@@ -11,21 +11,24 @@ function LoginForm({ setLoggedIn, setUserName }) {
   const handleLogin = (event) => {
     event.preventDefault();
     let user = {
-      userName: name,
-      userPwd: pwd,
+      username: name,
+      password: pwd,
     };
-    UserService.login(user)
-      .then((res) => {
-        console.log(res);
-        UserService.fetchToken(res.data.token);
-        setLoggedIn(true);
-        setUserName(name);
-        navigate(`/`);
-      })
-      .catch((error) => {
-        console.log(error);
-        window.alert("아이디나 비밀번호가 다릅니다");
-      });
+    UserService.login(user);
+    setUserName(name);
+    setLoggedIn(true);
+    navigate('/');
+      // .then((res) => {
+      //    console.log(res.headers);
+      //   // UserService.fetchToken(res.data.token);
+      //   // setLoggedIn(true);
+      //   // setUserName(name);
+      //   navigate('/');
+      // })
+      // .catch((error) => {
+      //   console.log(error);
+      // });
+      
   };
 
   return (
@@ -37,6 +40,7 @@ function LoginForm({ setLoggedIn, setUserName }) {
             <input
               required
               label="아이디"
+              name="username"
               autoComplete="username"
               onChange={(e) => setName(e.target.value)}
             />
@@ -47,6 +51,7 @@ function LoginForm({ setLoggedIn, setUserName }) {
               required
               label="비밀번호"
               type="password"
+              name="password"
               autoComplete="current-password"
               onChange={(e) => setPwd(e.target.value)}
             />

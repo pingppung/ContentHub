@@ -1,32 +1,36 @@
 package com.example.contenthub.controller;
 
-import com.example.contenthub.dto.JwtDto;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
 import com.example.contenthub.service.AuthService;
-import com.example.contenthub.service.JwtProvider;
+import com.example.contenthub.service.JwtService;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthController {
-    private final AuthService authService;
-    private final JwtProvider jwtService;
-
     @Autowired
-    public AuthController(AuthService authService, JwtProvider jwtService) {
+    private final AuthService authService;
+    @Autowired
+    private final JwtService jwtService;
+
+    public AuthController(AuthService authService, JwtService jwtService) {
         this.authService = authService;
         this.jwtService = jwtService;
     }
 
-    @PostMapping("/auth/login")
-    public ResponseEntity<?> authenticate(@RequestBody User user) throws UserException {
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestParam User user) throws UserException {
+        System.out.println("user " + user.getUsername() + " " + user.getUsername());
         try {
-            JwtDto jwtDto = authService.authenticate(user);
-            return ResponseEntity.ok(jwtDto);
+            // JwtDto jwtDto = authService.authenticate(user);
+            return ResponseEntity.ok(user);
         } catch (UserException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
@@ -35,6 +39,7 @@ public class AuthController {
     @PostMapping("/auth/signup")
     public ResponseEntity<String> SignUp(@RequestBody User user) throws UserException {
         try {
+            System.out.println("user sign " + user.getUsername() + " " + user.getUsername());
             authService.saveUser(user);
             return ResponseEntity.ok("User saved successfully");
         } catch (UserException e) {
@@ -43,17 +48,20 @@ public class AuthController {
 
     }
 
+    // 인증이나 권한이 필요한 부분에서만 mapping한거라서 그냥 보내줘도 되지 않을까
     @GetMapping("/auth/verifyToken")
     public ResponseEntity<String> verifyToken(HttpServletRequest request) throws UserException {
-        String token = request.getHeader("Authorization").substring(7);
-        if (jwtService.isValidToken(token)) {
-            return ResponseEntity.ok(jwtService.extractUsername(token));
-        } else
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰이 유효하지 않습니다");
+        String jwtToken = request.getHeader("Authorization");
+        String username = jwtService.extractUsername(jwtToken);
+        return ResponseEntity.ok(username);
     }
 
-    public String getMethodName(@RequestParam String param) {
-        return new String();
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/auth/verifyAuth")
+    public ResponseEntity<String> verifyADMIN(HttpServletRequest request) throws UserException {
+        String jwtToken = request.getHeader("Authorization");
+        String username = jwtService.extractUsername(jwtToken);
+        return ResponseEntity.ok(username);
     }
 
     // 예외 처리 핸들러

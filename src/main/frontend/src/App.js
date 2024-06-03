@@ -15,11 +15,15 @@ function App() {
   useEffect(() => {
     // 로컬 스토리지에서 토큰을 가져오는 로직
     const token = UserService.getToken("accessToken");
-    if (token) {
+    if (token != null) {
       setLoggedIn(true);
       UserService.verifyToken(token).then((res) => {
         setName(res.data);
-      });
+        console.log(res);
+      }).catch((error) => {
+        console.log(error);
+        setLoggedIn(false); // 토큰 검증 실패 시 로그인 상태 해제
+    });
     }
   }, [name]);
 
@@ -42,9 +46,12 @@ function App() {
             <Home name={name} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
           }
         />
+        <Route path="/success" element={<div>sadf</div>} />
         <Route element={<PrivateRoute redirectPath="/login"/>} >
           <Route path="/user" element={<MyPage />} /> 
-          <Route path="/admin" element={<MyPage />} />
+        </Route>
+        <Route element={<PrivateRoute redirectPath="/"/>} >
+          <Route path="/admin" element={<div>{name}님은 admin 인증된 사람입니다</div>} />
         </Route>
       </Routes>
     </Router>

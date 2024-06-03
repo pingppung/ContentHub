@@ -48,7 +48,7 @@ function Header({ name, loggedIn, setLoggedIn }) {
       {loggedIn ? (
         // 로그인 상태일 때
         <>
-          <div className={styles.userName}>{name}</div>
+          <div className={styles.userName}>{name}님</div>
           <button className={styles.logout} onClick={handleLogoutClick}>
             로그아웃
           </button>

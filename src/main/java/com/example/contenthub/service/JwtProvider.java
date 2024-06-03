@@ -3,6 +3,8 @@ package com.example.contenthub.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.auth0.jwt.algorithms.Algorithm;
 import com.example.contenthub.entity.User;
 
 import java.util.Date;
@@ -50,14 +53,14 @@ public class JwtProvider {
                 .getBody();
     }
 
-    public String generateToken(Long userId, String username) {
-        return Jwts.builder()
-                .setSubject(String.valueOf(userId))
-                .claim("username", username)
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
-    }
+    // public String generateToken(Long userId, String username) {
+    // return Jwts.builder()
+    // .setSubject(String.valueOf(userId))
+    // .claim("username", username)
+    // .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+    // .signWith(Algorithm.HMAC512(SECRET_KEY))
+    // .compact();
+    // }
 
     public String extractUsername(String token) {
         return (String) extractClaim(token, claims -> claims.get("username"));
@@ -67,7 +70,9 @@ public class JwtProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(Keys.hmacShaKeyFor(
+                        "wpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkf"
+                                .getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
