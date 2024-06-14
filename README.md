@@ -22,12 +22,23 @@
 - Library & Framework : `SpringBoot` `React` `Selenium`
 - Database : `MongoDB`
 - Tool : `IntelliJ`
+- 
   <br/>
 
-## 고민한 내용
+## 🚨 트러블 슈팅
 
-- 크롤링한 사이트에서 카테고리 수정시 오류 발생?
-- Private 메서드도 테스트를 해야하나?
+#### 문제: 웹페이지 구조 변경 시 요소를 찾지 못하는 문제
+
+![image](https://github.com/pingppung/ContentHub/assets/57535999/41f0a45c-50de-4318-b010-ef7b066c0233)
+- **상황**: 웹페이지 구조 변경된다면 `By.xpath` 방식으로 요소를 찾지 못하는 문제가 발생했습니다.
+- **현재**: 정기적인 코드 업데이트와 테스트로 대응 중입니다.
+
+#### 고민해본 해결 방법
+
+1. **CSS Selectors 사용**: XPath 대신 CSS Selectors를 사용하여 변경에 더 유연하게 대응합니다.
+   ```java
+   WebElement element = driver.findElement(By.cssSelector("#content ul li"));
+
 
 
 
