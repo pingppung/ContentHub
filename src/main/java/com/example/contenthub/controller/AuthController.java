@@ -7,6 +7,8 @@ import com.example.contenthub.service.JwtService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,18 +52,20 @@ public class AuthController {
 
     // 인증이나 권한이 필요한 부분에서만 mapping한거라서 그냥 보내줘도 되지 않을까
     @GetMapping("/auth/verifyToken")
-    public ResponseEntity<String> verifyToken(HttpServletRequest request) throws UserException {
+    public ResponseEntity<Object> verifyToken(HttpServletRequest request) throws UserException {
         String jwtToken = request.getHeader("Authorization");
-        String username = jwtService.extractUsername(jwtToken);
-        return ResponseEntity.ok(username);
+        System.out.println(jwtToken);
+        Map<String, String> userInfo = jwtService.extractUserInfo(jwtToken);
+        System.out.println(userInfo);
+        return ResponseEntity.ok(userInfo);
     }
 
     @Secured("ROLE_ADMIN")
     @GetMapping("/auth/verifyAuth")
     public ResponseEntity<String> verifyADMIN(HttpServletRequest request) throws UserException {
         String jwtToken = request.getHeader("Authorization");
-        String username = jwtService.extractUsername(jwtToken);
-        return ResponseEntity.ok(username);
+        System.out.println("누구?");
+        return ResponseEntity.ok("허락한다");
     }
 
     // 예외 처리 핸들러

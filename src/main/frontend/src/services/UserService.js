@@ -17,6 +17,9 @@ class UserService {
         Authorization: "Bearer " + token,
       },
       withCredentials: true,
+    }).then(response => {
+      console.log(response.data);
+      return response.data;
     });
   }
   verifyAuth(token) {

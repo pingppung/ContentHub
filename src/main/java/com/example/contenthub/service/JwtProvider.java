@@ -71,7 +71,7 @@ public class JwtProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(
-                        "wpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkfwpqkf"
+                        "wpqkf"
                                 .getBytes()))
                 .build()
                 .parseClaimsJws(token)

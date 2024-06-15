@@ -3,6 +3,7 @@ package com.example.contenthub.service;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
+import com.example.contenthub.entity.User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -13,6 +14,8 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -44,11 +47,14 @@ public class JwtService {
                 return authorizationHeader.substring("Bearer ".length());
         }
 
-        public String extractUsername(String token) {
-                return JWT.decode(extractToken(token)).getClaim("username").asString();
-                // return jwtProvider.extractUsername(extractToken(token));
-                // return (String) extractClaim(token, claims -> claims.get("username"));
-                // Claims claims = extractAllClaims(token); // 토큰에서 모든 클레임 추출
-                // return (String) claims.get("username");
+        public Map<String, String> extractUserInfo(String token) {
+                String username = JWT.decode(extractToken(token)).getClaim("username").asString();
+                String role = JWT.decode(extractToken(token)).getClaim("role").asString();
+
+                Map<String, String> userInfo = new HashMap<>();
+                userInfo.put("username", username);
+                userInfo.put("role", role);
+
+                return userInfo;
         }
 }

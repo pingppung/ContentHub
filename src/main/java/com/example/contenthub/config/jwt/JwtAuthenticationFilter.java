@@ -82,6 +82,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Token 만료 시간 -> // 현재시간 + 만료시간
                 .withClaim("id", principalDetails.getUser().getId()) // 비공개 Claim -> 넣고싶은거 아무거나 넣으면 됨
                 .withClaim("username", principalDetails.getUser().getUsername()) // 비공개 Claim
+                .withClaim("role", principalDetails.getUser().getRole())
                 .sign(Algorithm.HMAC512(
                         "wpqkf")); // HMAC512는
         // SECRET
