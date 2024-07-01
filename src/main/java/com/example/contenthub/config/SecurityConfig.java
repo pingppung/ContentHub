@@ -1,9 +1,6 @@
 package com.example.contenthub.config;
 
 import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +29,6 @@ import com.example.contenthub.config.jwt.JwtAuthorizationFilter;
 import com.example.contenthub.repository.UserRepository;
 import com.example.contenthub.utils.TokenProvider;
 
-import ch.qos.logback.core.subst.Token;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

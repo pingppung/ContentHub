@@ -12,11 +12,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.contenthub.config.auth.PrincipalDetails;
 import com.example.contenthub.entity.User;
-import com.example.contenthub.repository.UserRepository;
 import com.example.contenthub.utils.TokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.qos.logback.core.subst.Token;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

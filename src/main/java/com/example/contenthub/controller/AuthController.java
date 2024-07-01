@@ -52,7 +52,7 @@ public class AuthController {
     @Secured("ROLE_ADMIN")
     @GetMapping("/auth/verifyAuth")
     public ResponseEntity<String> verifyADMIN(HttpServletRequest request) throws UserException {
-        String jwtToken = request.getHeader("Authorization");
+        // String jwtToken = request.getHeader("Authorization");
         return ResponseEntity.ok("권한 test 허락한다");
     }
 
