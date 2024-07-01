@@ -1,17 +1,19 @@
 package com.example.contenthub.service;
 
-import com.example.contenthub.constants.Role;
-import com.example.contenthub.dto.JwtDto;
+import com.example.contenthub.dto.ResponseDTO;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
 import com.example.contenthub.repository.UserRepository;
+import com.example.contenthub.utils.TokenProvider;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-//인증 정보를 처리하고, 인증이 성공하면 JwtService를 통해 JWT를 생성
+//자격 증명 확인 후 유효성 검증, 로그인 / 회원가입 처리
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     public void saveUser(User request) throws UserException {
         User existingUser = userRepository.findByUsername(request.getUsername());
@@ -31,17 +34,19 @@ public class AuthService {
                 .role("ROLE_USER")
                 .build();
         userRepository.save(user);
-        // System.out.println(user.getId());
     }
 
-    // public JwtDto authenticate(User request) throws UserException {
-    // User user = userRepository.findByUsername(request.getUsername());
-    // if (user == null || !passwordEncoder.matches(request.getPassword(),
-    // user.getPassword())) {
-    // throw UserException.invalidUserException();
-    // }
-    // // String token = jwtService.generateToken(user.getId(), user.getUsername());
-    // return new JwtDto(token);
-    // }
+    public void validateAuthorizationHeader(String header) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            throw new IllegalArgumentException();
+        }
+    }
 
+    public String extractToken(String authorizationHeader) {
+        return authorizationHeader.substring("Bearer ".length());
+    }
+
+    public ResponseDTO<UserDetails> getUserInfo(String token) {
+        return tokenProvider.getUserDetailsFromToken(token);
+    }
 }

@@ -18,7 +18,7 @@ function App() {
     if (token != null) {
       setLoggedIn(true);
       UserService.verifyToken(token).then((res) => {
-        setName(res.data);
+        setName(res.data.username);
         console.log(res);
       }).catch((error) => {
         console.log(error);

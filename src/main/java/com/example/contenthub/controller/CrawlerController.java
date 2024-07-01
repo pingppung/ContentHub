@@ -3,23 +3,20 @@ package com.example.contenthub.controller;
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.service.NovelCrawlerService;
 
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 class CrawlerController {
     private final NovelCrawlerService novelCrawlerService;
-
-    @Autowired
-    public CrawlerController(NovelCrawlerService novelCrawlerService) {
-        this.novelCrawlerService = novelCrawlerService;
-    }
 
     @GetMapping("/api/novel")
     public List<ContentDTO> getNovelsByGenre(@RequestParam("genre") String genre) {
@@ -40,6 +37,5 @@ class CrawlerController {
         String decodedTitle = URLDecoder.decode(title, StandardCharsets.UTF_8);
         return novelCrawlerService.getDataByTitleContaining(decodedTitle);
     }
-
 
 }

@@ -14,7 +14,7 @@ public class CookieManager {
     public static void saveCookies(WebDriver driver, String filePath) {
         File file = new File(filePath);
         try {
-            //file.delete(); //옛날 파일 삭제
+            // file.delete(); //옛날 파일 삭제
             file.createNewFile();
             BufferedWriter bw = new BufferedWriter(new FileWriter(file));
             for (Cookie cookie : driver.manage().getCookies()) {
@@ -34,7 +34,6 @@ public class CookieManager {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
                 StringTokenizer token = new StringTokenizer(line, ";");
                 while (token.hasMoreTokens()) {
                     String name = token.nextToken();
