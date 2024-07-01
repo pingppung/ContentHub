@@ -18,6 +18,7 @@ class UserService {
       },
       withCredentials: true,
     }).then(response => {
+      console.log(response);
       console.log(response.data);
       return response.data;
     });

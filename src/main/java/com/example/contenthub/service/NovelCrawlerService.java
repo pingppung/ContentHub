@@ -15,27 +15,20 @@ import com.example.contenthub.repository.NovelRepository;
 import com.example.contenthub.repository.NovelSiteRepository;
 import com.example.contenthub.repository.SiteRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class NovelCrawlerService {
 
     private final NovelRepository novelRepository;
     private final SiteRepository siteRepository;
     private final NovelSiteRepository novelSiteRepository;
-
-    public NovelCrawlerService(NovelRepository novelRepository, SiteRepository siteRepository, NovelSiteRepository novelSiteRepository) {
-        this.novelRepository = novelRepository;
-        this.siteRepository = siteRepository;
-        this.novelSiteRepository = novelSiteRepository;
-    }
-
-    @Autowired
-    private NaverSeriesCrawler naverSeriesCrawler;
-
-    @Autowired
-    private KakaoPageCrawler kakaoPageCrawler;
+    private final NaverSeriesCrawler naverSeriesCrawler;
+    private final KakaoPageCrawler kakaoPageCrawler;
 
     public void crawl() throws IOException {
         List<ContentDTO> naverSeriesNovels = naverSeriesCrawler.crawl();
@@ -49,12 +42,13 @@ public class NovelCrawlerService {
     public void saveNovels(List<ContentDTO> contents, String siteName) {
         for (ContentDTO content : contents) {
             Novel existingNovel = getDataByTitle(content.getTitle());
-            //작품이 없는 경우에만 작품추가
+            // 작품이 없는 경우에만 작품추가
             if (existingNovel == null) {
-                Novel novel = new Novel(content.getTitle(), content.getCoverImg(), content.getSummary(), content.getGenre(), content.isAdultContent());
+                Novel novel = new Novel(content.getTitle(), content.getCoverImg(), content.getSummary(),
+                        content.getGenre(), content.isAdultContent());
                 saveNovelSite(novel, siteName, content.getProductId());
                 novelRepository.save(novel);
-            } else { //작품이 이미 존재하는 경우엔 사이트 추가만
+            } else { // 작품이 이미 존재하는 경우엔 사이트 추가만
                 saveNovelSite(existingNovel, siteName, content.getProductId());
                 novelRepository.save(existingNovel); // 작품 정보 업데이트
             }
@@ -70,7 +64,8 @@ public class NovelCrawlerService {
     public List<ContentDTO> getContentDTOList(List<Novel> list) {
         List<ContentDTO> contents = new ArrayList<>();
         for (Novel n : list) {
-            ContentDTO content = new ContentDTO(n.getTitle(), n.getCoverImg(), n.getSummary(), n.getGenre(), n.isAdultContent(), new ArrayList<>());
+            ContentDTO content = new ContentDTO(n.getTitle(), n.getCoverImg(), n.getSummary(), n.getGenre(),
+                    n.isAdultContent(), new ArrayList<>());
             for (NovelSite site : n.getSites()) {
                 SiteDTO siteDTO = new SiteDTO(site.getSite().getName(), site.getProductId());
                 content.getSiteDTOs().add(siteDTO);
@@ -103,7 +98,6 @@ public class NovelCrawlerService {
     public void deleteDataByTitle(String title) {
         novelRepository.deleteByTitle(title);
     }
-
 
     public void saveNovelSite(Novel novel, String siteName, String productId) {
         Site site = siteRepository.findByName(siteName);

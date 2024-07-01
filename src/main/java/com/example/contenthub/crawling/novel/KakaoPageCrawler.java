@@ -22,13 +22,17 @@ import static com.example.contenthub.crawling.WebDriverUtils.*;
 
 @Component
 public class KakaoPageCrawler {
-    @Autowired
-    KakaoPageLogin kakakoLogin;
+    private static final String BASE_URL = "https://page.kakao.com/menu/10011/screen/94";
+
+    private final KakaoPageLogin kakaoLogin;
+    private final NovelCrawlerService novelCrawlerService;
 
     @Autowired
-    @Lazy
-    NovelCrawlerService novelCrawlerService;
-    final static String BASE_URL = "https://page.kakao.com/menu/10011/screen/94";
+    public KakaoPageCrawler(KakaoPageLogin kakaoLogin,
+            NovelCrawlerService novelCrawlerService) {
+        this.kakaoLogin = kakaoLogin;
+        this.novelCrawlerService = novelCrawlerService;
+    }
 
     public List<ContentDTO> crawl() {
         List<ContentDTO> novels = new ArrayList<>();
@@ -75,10 +79,12 @@ public class KakaoPageCrawler {
     private List<ContentDTO> getKakaoPageData(WebDriver driver, WebDriver detailDriver) {
         List<ContentDTO> novels = new ArrayList<>();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        List<WebElement> novelElements = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//*[@id=\"__next\"]/div/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div/div")));
+        List<WebElement> novelElements = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(
+                By.xpath("//*[@id=\"__next\"]/div/div[2]/div/div[2]/div[3]/div/div[2]/div/div/div/div")));
         for (WebElement element : novelElements) {
             ContentDTO contentData = extractNovelData(element, detailDriver);
-            if (contentData != null) novels.add(contentData);
+            if (contentData != null)
+                novels.add(contentData);
         }
         return novels;
     }
@@ -93,7 +99,8 @@ public class KakaoPageCrawler {
         String productId = eventMeta.get("id");
         String title = eventMeta.get("name");
 
-        if (novelCrawlerService.isDataExist(title, SiteType.KAKAO_PAGE.getName())) return null;
+        if (novelCrawlerService.isDataExist(title, SiteType.KAKAO_PAGE.getName()))
+            return null;
 
         String genre = eventMeta.get("subcategory");
         WebElement imgDiv = novel.findElement(By.xpath(".//div/div/img"));
@@ -113,13 +120,13 @@ public class KakaoPageCrawler {
         }
     }
 
-
     private String getNovelSummary(WebDriver driver, String productId) {
         try {
             String detailURL = String.format("%s/content/%s?tab_type=about", "https://page.kakao.com", productId);
             driver.get(detailURL);
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            By summaryLocator = By.xpath("//*[@id=\"__next\"]/div/div[2]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/span");
+            By summaryLocator = By.xpath(
+                    "//*[@id=\"__next\"]/div/div[2]/div[1]/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/span");
             WebElement summary = wait.until(ExpectedConditions.visibilityOfElementLocated(summaryLocator));
 
             return summary.getText();

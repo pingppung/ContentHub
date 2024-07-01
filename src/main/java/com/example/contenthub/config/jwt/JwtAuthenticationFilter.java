@@ -1,8 +1,9 @@
 package com.example.contenthub.config.jwt;
 
 import java.io.IOException;
-import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,10 +12,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.contenthub.config.auth.PrincipalDetails;
 import com.example.contenthub.entity.User;
+import com.example.contenthub.repository.UserRepository;
+import com.example.contenthub.utils.TokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 
+import ch.qos.logback.core.subst.Token;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,23 +28,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    // 토큰 유효시간 30분
-    private long EXPIRATION_TIME = 30 * 60 * 1000L;
-
     private final AuthenticationManager authenticationManager;
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final TokenProvider tokenProvider;
 
     /// auth/login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-        System.out.println("JwtAuthenticationFilter : 로그인 시도 중");
-
+        log.info("JwtAuthenticationFilter : 로그인 시도 중");
         // 1. username과 password를 받아서
         try {
             // request.getInputStream() => username과 password가 담겨져있음
             ObjectMapper om = new ObjectMapper();
             User user = om.readValue(request.getInputStream(), User.class);
-            System.out.println(user);
 
             // 예시
             // 토큰 생성 - 원래는 로그인 할 때 자동으로 만들어지게 할거임
@@ -54,11 +53,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 토큰을 통해 로그인 시도를 해보고 정상적으로 되면 authentication이 생성
             // DB에 있는 username과 password가 일치한다
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            System.out.println("토큰 생성 완료!");
+
+            log.info("토큰 생성 완료!");
 
             // 로그인 정상적으로 되었다는 뜻
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            System.out.println("로그인 완료됨 : " + principalDetails.getUser().getUsername());
+            log.info("로그인 완료됨 : " + principalDetails.getUser().getUsername());
             // authentication 객체가 session영역에 저장해야하고 그 방법은 return 해주면 됨
             // 리턴의 이유는 권한 관리를 security가 대신 해주기 때문에 편하려고 하는거임
             // 굳이 JWT 토큰을 사용하면서 세션을 만들 이유가 없음. 근데 단지 권한 처리 때문에 session넣어줌
@@ -74,21 +74,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
             Authentication authResult) throws IOException, ServletException {
-        System.out.println("JWT 토큰 생성");
+        log.info("JWT 토큰 생성");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
-        // RSA 방식은 아니고 Hash암호 방식
-        String jwtToken = JWT.create()
-                .withSubject(principalDetails.getUsername()) // token 별명 느낌?
-                .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Token 만료 시간 -> // 현재시간 + 만료시간
-                .withClaim("id", principalDetails.getUser().getId()) // 비공개 Claim -> 넣고싶은거 아무거나 넣으면 됨
-                .withClaim("username", principalDetails.getUser().getUsername()) // 비공개 Claim
-                .withClaim("role", principalDetails.getUser().getRole())
-                .sign(Algorithm.HMAC512(
-                        "wpqkf")); // HMAC512는
-        // SECRET
-        // KEY를
-        // 필요로
-        // 함
+        String jwtToken = tokenProvider.generateToken(principalDetails);
 
         response.addHeader("Authorization", "Bearer " + jwtToken);
     }

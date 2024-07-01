@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -14,7 +17,9 @@ import com.example.contenthub.config.auth.PrincipalDetails;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
 import com.example.contenthub.repository.UserRepository;
+import com.example.contenthub.utils.TokenProvider;
 
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,22 +30,27 @@ import jakarta.servlet.http.HttpServletResponse;
 //만약에 권한이나 인증이 필요한 주소가 아니라면 이 필터 안탐
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private UserRepository userRepository;
+    private final Logger log = LoggerFactory.getLogger(getClass());
+    private final UserRepository userRepository;
+    private final String key;
+    private final TokenProvider tokenProvider;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
-
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository,
+            TokenProvider tokenProvider, String key) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.tokenProvider = tokenProvider;
+        this.key = key;
     }
 
     // 인증이나 권한이 필요한 주소 요청이 있을 때 해당 필터를 타게 됨
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        System.out.println("인증이나 권한이 필요한 주소 요청이 됨");
+        log.info("인증이나 권한이 필요한 주소 요청이 됨");
 
         String jwtHeader = request.getHeader("Authorization");
-        System.out.println("jwtHeader : " + jwtHeader);
+        log.info("jwtHeader : " + jwtHeader);
 
         // header가 있는지 확인
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
@@ -52,16 +62,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (jwtToken.equals("null")) {
             throw UserException.invalidUserException();
         }
-        String username = JWT
-                .require(Algorithm.HMAC512(
-                        "wpqkf"))
-                .build().verify(jwtToken).getClaim("username")
-                .asString();
+        log.info("JwtAuthorizationFilter 키 확인 :  " + key);
+        String username = tokenProvider.getUsernameFromToken(jwtToken);
         // 서명이 정상적으로 됨
         if (username != null) {
             User userEntity = userRepository.findByUsername(username);
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
-            System.out.println("User roles: " + userEntity.getRole()); // 권한 출력
+            log.info("User roles: " + userEntity.getRole()); // 권한 출력
 
             // 이미 username으로 사용자가 인증됐기 때문에 강제로 authentication 만드는 중
             // 비밀번호를 안넣고 null을 넣어도 상관없다.

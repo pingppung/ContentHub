@@ -3,6 +3,7 @@ package com.example.contenthub.config;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +30,9 @@ import com.example.contenthub.config.auth.PrincipalDetailsService;
 import com.example.contenthub.config.jwt.JwtAuthenticationFilter;
 import com.example.contenthub.config.jwt.JwtAuthorizationFilter;
 import com.example.contenthub.repository.UserRepository;
+import com.example.contenthub.utils.TokenProvider;
 
+import ch.qos.logback.core.subst.Token;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +48,10 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final PrincipalDetailsService principalDetailsService;
     private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
+
+    @Value("${jwt.secret.key}")
+    private String SECRET_KEY;
 
     // 사용자가 제공한 비밀번호를 암호화하여 저장하고, 인증 시 저장된 비밀번호와 사용자가 제공한 비밀번호를 비교하여 일치 여부를 확인
     @Bean
@@ -64,8 +71,9 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilter(corsFilter) // 1. 컨트롤러에 @CrossOrigin 하는 방법 - 인증 X, 2. 시큐리티 필터에 등록 - 인증O
-                .addFilter(new JwtAuthenticationFilter(authenticationManager))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager, userRepository));
+                .addFilter(new JwtAuthenticationFilter(authenticationManager, tokenProvider))
+                .addFilter(
+                        new JwtAuthorizationFilter(authenticationManager, userRepository, tokenProvider, SECRET_KEY));
         http.sessionManagement( // JWT 방식은 세션저장을 사용하지 않기 때문에 꺼주기.
                 sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(authorize -> authorize

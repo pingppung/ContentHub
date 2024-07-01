@@ -19,11 +19,11 @@ const PrivateRoute = ({ redirectPath }) => {
         }
         UserService.verifyToken(token)
             .then((res) => {
-                setUserInfo(res.username);
+                setUserInfo(res.data.username);
                 setIsAuthenticated(true);
                 setLoading(false);
                 // 사용자 정보를 기반으로 어드민 여부를 확인하고 처리
-                if (res.role === "ROLE_ADMIN") {
+                if (res.data.authorities.some(authority => authority.authority === "ROLE_ADMIN")) {
                     console.log("asdf");
                     handleAdminActions();
                 }

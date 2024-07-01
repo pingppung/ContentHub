@@ -22,17 +22,21 @@ import static com.example.contenthub.crawling.WebDriverUtils.*;
 
 @Component
 public class NaverSeriesCrawler {
-    @Autowired
-    NaverSeriesLogin naverLogin;
+
+    private static final String BASE_URL = "https://series.naver.com/novel/top100List.series?";
+    private static final String TYPECODEPARAM = "rankingTypeCode=HOURLY";
+    private static final String CATEGORYCODEPARAM = "categoryCode=ALL";
+    private static final String PAGEPARAM = "page=";
+
+    private final NaverSeriesLogin naverLogin;
+    private final NovelCrawlerService novelCrawlerService;
 
     @Autowired
-    @Lazy
-    NovelCrawlerService novelCrawlerService;
-
-    final static String BASE_URL = "https://series.naver.com/novel/top100List.series?";
-    final static String TYPECODEPARAM = "rankingTypeCode=HOURLY";
-    final static String CATEGORYCODEPARAM = "categoryCode=ALL";
-    final static String PAGEPARAM = "page=";
+    public NaverSeriesCrawler(NaverSeriesLogin naverLogin,
+            NovelCrawlerService novelCrawlerService) {
+        this.naverLogin = naverLogin;
+        this.novelCrawlerService = novelCrawlerService;
+    }
 
     public List<ContentDTO> crawl() {
         List<ContentDTO> novels = new ArrayList<>();
@@ -77,7 +81,8 @@ public class NaverSeriesCrawler {
         List<WebElement> novelElements = driver.findElements(By.xpath("//*[@id=\"content\"]/div/ul/li"));
         for (WebElement element : novelElements) {
             ContentDTO contentData = extractNovelData(element, detailDriver);
-            if (contentData != null) novels.add(contentData);
+            if (contentData != null)
+                novels.add(contentData);
         }
         return novels;
     }
@@ -85,7 +90,8 @@ public class NaverSeriesCrawler {
     private ContentDTO extractNovelData(WebElement element, WebDriver detailDriver) {
         WebElement novel = element.findElement(By.xpath(".//div[2]/h3/a"));
         String title = extractTitle(novel.getText());
-        if (novelCrawlerService.isDataExist(title, SiteType.NAVER_SERIES.getName())) return null;
+        if (novelCrawlerService.isDataExist(title, SiteType.NAVER_SERIES.getName()))
+            return null;
 
         String detailHref = novel.getAttribute("href");
         String productId = extractProductId(detailHref);

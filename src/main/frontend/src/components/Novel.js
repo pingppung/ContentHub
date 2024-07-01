@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import styles from "./css/Novel.module.css";
+import { PiHeart } from "react-icons/pi";
+import { PiHeartFill } from "react-icons/pi";
 
 function Novel({ title, coverImg, summary, genre, adultContent, openNovelDetail }) {
   const handleClick = () => {
