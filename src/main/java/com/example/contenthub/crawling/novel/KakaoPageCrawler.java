@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -26,7 +25,6 @@ public class KakaoPageCrawler {
     private final KakaoPageLogin kakaoLogin;
     private final NovelCrawlerService novelCrawlerService;
 
-    @Autowired
     public KakaoPageCrawler(KakaoPageLogin kakaoLogin,
             NovelCrawlerService novelCrawlerService) {
         this.kakaoLogin = kakaoLogin;
@@ -61,7 +59,6 @@ public class KakaoPageCrawler {
     }
 
     private void scrollPageToBottom(WebDriver driver) throws InterruptedException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         while (true) {

@@ -2,6 +2,10 @@ package com.example.contenthub.login;
 
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.text.ParseException;
@@ -10,8 +14,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
+@Slf4j
 public class CookieManager {
-    public static void saveCookies(WebDriver driver, String filePath) {
+
+    public void saveCookies(WebDriver driver, String filePath) {
         File file = new File(filePath);
         try {
             // file.delete(); //옛날 파일 삭제
@@ -30,7 +36,7 @@ public class CookieManager {
         }
     }
 
-    public static void loadCookies(WebDriver driver, String filePath) {
+    public void loadCookies(WebDriver driver, String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -60,7 +66,7 @@ public class CookieManager {
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("IOException occurred: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
