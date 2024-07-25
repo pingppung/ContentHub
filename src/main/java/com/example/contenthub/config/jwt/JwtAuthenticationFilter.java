@@ -2,8 +2,6 @@ package com.example.contenthub.config.jwt;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,14 +18,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 //로그인 요청해서 username, password post 전송하면
 //usernamepasswordauthenticationfilter가 작동
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
     private final AuthenticationManager authenticationManager;
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final TokenProvider tokenProvider;
 
     /// auth/login 요청을 하면 로그인 시도를 위해서 실행되는 함수
