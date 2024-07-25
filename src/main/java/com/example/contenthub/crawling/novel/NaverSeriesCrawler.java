@@ -1,24 +1,28 @@
 package com.example.contenthub.crawling.novel;
 
-import com.example.contenthub.constants.SiteType;
 import com.example.contenthub.dto.ContentDTO;
-
 import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.login.NaverSeriesLogin;
-import com.example.contenthub.service.NovelCrawlerService;
-import org.openqa.selenium.*;
+import lombok.RequiredArgsConstructor;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.example.contenthub.crawling.WebDriverUtils.*;
+import static com.example.contenthub.crawling.WebDriverUtils.closeWebDriver;
+import static com.example.contenthub.crawling.WebDriverUtils.createWebDriver;
 
 @Component
+@RequiredArgsConstructor
 public class NaverSeriesCrawler {
 
     private static final String BASE_URL = "https://series.naver.com/novel/top100List.series?";
@@ -27,13 +31,6 @@ public class NaverSeriesCrawler {
     private static final String PAGEPARAM = "page=";
 
     private final NaverSeriesLogin naverLogin;
-    private final NovelCrawlerService novelCrawlerService;
-
-    public NaverSeriesCrawler(NaverSeriesLogin naverLogin,
-            NovelCrawlerService novelCrawlerService) {
-        this.naverLogin = naverLogin;
-        this.novelCrawlerService = novelCrawlerService;
-    }
 
     public List<ContentDTO> crawl() {
         List<ContentDTO> novels = new ArrayList<>();
@@ -87,8 +84,8 @@ public class NaverSeriesCrawler {
     private ContentDTO extractNovelData(WebElement element, WebDriver detailDriver) {
         WebElement novel = element.findElement(By.xpath(".//div[2]/h3/a"));
         String title = extractTitle(novel.getText());
-        if (novelCrawlerService.isDataExist(title, SiteType.NAVER_SERIES.getName()))
-            return null;
+//        if (novelCrawlerService.isDataExist(title, SiteType.NAVER_SERIES.getName()))
+//            return null;
 
         String detailHref = novel.getAttribute("href");
         String productId = extractProductId(detailHref);

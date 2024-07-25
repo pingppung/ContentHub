@@ -1,12 +1,8 @@
 package com.example.contenthub.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.crawling.novel.KakaoPageCrawler;
 import com.example.contenthub.crawling.novel.NaverSeriesCrawler;
+import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.dto.SiteDTO;
 import com.example.contenthub.entity.Novel;
 import com.example.contenthub.entity.NovelSite;
@@ -16,8 +12,11 @@ import com.example.contenthub.repository.NovelSiteRepository;
 import com.example.contenthub.repository.SiteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +38,7 @@ public class NovelCrawlerService {
 
     @Transactional
     public void saveNovels(List<ContentDTO> contents, String siteName) {
+
         for (ContentDTO content : contents) {
             Novel existingNovel = getDataByTitle(content.getTitle());
             // 작품이 없는 경우에만 작품추가

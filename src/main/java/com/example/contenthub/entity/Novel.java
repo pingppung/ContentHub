@@ -1,7 +1,8 @@
 package com.example.contenthub.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,5 +51,4 @@ public class Novel {
         return this.sites.stream()
                 .anyMatch(site -> site.getSite().getName().equals(siteName));
     }
-
 }

@@ -1,11 +1,10 @@
 package com.example.contenthub.crawling.novel;
 
-import com.example.contenthub.constants.SiteType;
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.login.KakaoPageLogin;
-import com.example.contenthub.service.NovelCrawlerService;
 import com.google.gson.Gson;
+import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -16,20 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.contenthub.crawling.WebDriverUtils.*;
+import static com.example.contenthub.crawling.WebDriverUtils.closeWebDriver;
+import static com.example.contenthub.crawling.WebDriverUtils.createWebDriver;
 
 @Component
+@RequiredArgsConstructor
 public class KakaoPageCrawler {
     private static final String BASE_URL = "https://page.kakao.com/menu/10011/screen/94";
 
     private final KakaoPageLogin kakaoLogin;
-    private final NovelCrawlerService novelCrawlerService;
-
-    public KakaoPageCrawler(KakaoPageLogin kakaoLogin,
-            NovelCrawlerService novelCrawlerService) {
-        this.kakaoLogin = kakaoLogin;
-        this.novelCrawlerService = novelCrawlerService;
-    }
 
     public List<ContentDTO> crawl() {
         List<ContentDTO> novels = new ArrayList<>();
@@ -95,8 +89,8 @@ public class KakaoPageCrawler {
         String productId = eventMeta.get("id");
         String title = eventMeta.get("name");
 
-        if (novelCrawlerService.isDataExist(title, SiteType.KAKAO_PAGE.getName()))
-            return null;
+//        if (novelCrawlerService.isDataExist(title, SiteType.KAKAO_PAGE.getName()))
+//            return null;
 
         String genre = eventMeta.get("subcategory");
         WebElement imgDiv = novel.findElement(By.xpath(".//div/div/img"));
