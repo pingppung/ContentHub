@@ -33,7 +33,7 @@ class UserService {
     });
   }
   login(user) {
-    axios.post("/login", user, {
+    axios.post("/auth/login", user, {
       headers: { "Content-Type": `application/json` },
       withCredentials: true,
     }).then((res) => {

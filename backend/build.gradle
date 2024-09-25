@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'war'
 }
 
 group = 'com.example'
@@ -11,6 +12,15 @@ java {
     sourceCompatibility = '17'
 }
 
+bootWar {
+    enabled = true
+}
+
+
+jar {
+    enabled = false
+}
+
 repositories {
     mavenCentral()
 }
@@ -18,12 +28,14 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     implementation 'org.seleniumhq.selenium:selenium-java:4.14.1'
     implementation 'org.jsoup:jsoup:1.14.2'
-    implementation 'org.projectlombok:lombok:1.18.22'
+    implementation 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
     implementation 'junit:junit:4.13.1'
 
@@ -42,6 +54,7 @@ dependencies {
 
 
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
