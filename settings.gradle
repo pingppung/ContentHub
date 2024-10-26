@@ -1,1 +1,3 @@
-rootProject.name = 'contenthub'
+rootProject.name = 'ContentHub'
+include 'backend'
+include 'frontend'

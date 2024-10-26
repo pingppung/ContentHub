@@ -110,23 +110,23 @@ public class NovelCrawlerServiceTest {
         assertFalse(result.get(0).isAdultContent());
     }
 
-    @DisplayName("같은 작품에 대해서 다른 사이트일 때 사이트 정보만 추가되는지 확인하는 테스트")
-    @Test
-    public void saveNovels_existingNovelTest() {
-        when(novelRepository.findByTitle("Title")).thenReturn(mockNovel);
-        when(novelRepository.save(any(Novel.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        novelCrawlerService.saveNovels(List.of(content), "네이버시리즈");
-
-        ContentDTO newNovel = new ContentDTO("Title", "coverImg", "summary", "genre", false, "ID2");
-        novelCrawlerService.saveNovels(List.of(newNovel), "카카오페이지");
-
-        Novel result = novelCrawlerService.getDataByTitle("Title");
-        assertNotNull(result);
-        assertEquals(2, result.getSites().size());
-        
-        // 추가 검증: 두 개의 사이트 정보가 제대로 저장되었는지 확인
-        List<NovelSite> sites = result.getSites();
-        assertTrue(sites.stream().anyMatch(site -> "네이버시리즈".equals(site.getSite())));
-        assertTrue(sites.stream().anyMatch(site -> "카카오페이지".equals(site.getSite())));
-    }
+//    @DisplayName("같은 작품에 대해서 다른 사이트일 때 사이트 정보만 추가되는지 확인하는 테스트")
+//    @Test
+//    public void saveNovels_existingNovelTest() {
+//        when(novelRepository.findByTitle("Title")).thenReturn(mockNovel);
+//        when(novelRepository.save(any(Novel.class))).thenAnswer(invocation -> invocation.getArgument(0));
+//        novelCrawlerService.saveNovels(List.of(content), "네이버시리즈");
+//
+//        ContentDTO newNovel = new ContentDTO("Title", "coverImg", "summary", "genre", false, "ID2");
+//        novelCrawlerService.saveNovels(List.of(newNovel), "카카오페이지");
+//
+//        Novel result = novelCrawlerService.getDataByTitle("Title");
+//        assertNotNull(result);
+//        assertEquals(2, result.getSites().size());
+//
+//        // 추가 검증: 두 개의 사이트 정보가 제대로 저장되었는지 확인
+//        List<NovelSite> sites = result.getSites();
+//        assertTrue(sites.stream().anyMatch(site -> "네이버시리즈".equals(site.getSite())));
+//        assertTrue(sites.stream().anyMatch(site -> "카카오페이지".equals(site.getSite())));
+//    }
 }

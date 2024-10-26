@@ -13,6 +13,7 @@ import java.time.Duration;
 public class WebDriverUtils {
     public static WebDriver createWebDriver() {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/static/chromedriver.exe");
+        //System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver"); // Docker 컨테이너 내 경로
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         //chromeOptions.addArguments("--headless");

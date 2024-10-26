@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -29,8 +30,8 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/auth/signup")
-    public ResponseEntity<String> SignUp(@RequestBody User user) throws UserException {
+    @PostMapping("/signup")
+    public ResponseEntity<String> signUp(@RequestBody User user) throws UserException {
         try {
             System.out.println("user sign " + user.getUsername() + " " + user.getUsername());
             authService.saveUser(user);
@@ -38,10 +39,9 @@ public class AuthController {
         } catch (UserException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
     }
 
-    @GetMapping("/auth/verifyToken")
+    @GetMapping("/verifyToken")
     public ResponseEntity<Object> verifyToken(@RequestHeader("Authorization") String tokenHeader) throws UserException {
         authService.validateAuthorizationHeader(tokenHeader);
         String jwt = authService.extractToken(tokenHeader);
@@ -50,9 +50,8 @@ public class AuthController {
     }
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/auth/verifyAuth")
+    @GetMapping("/verifyAuth")
     public ResponseEntity<String> verifyADMIN(HttpServletRequest request) throws UserException {
-        // String jwtToken = request.getHeader("Authorization");
         return ResponseEntity.ok("권한 test 허락한다");
     }
 
@@ -61,5 +60,4 @@ public class AuthController {
     public ResponseEntity<String> handleUserException(UserException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
-
 }
