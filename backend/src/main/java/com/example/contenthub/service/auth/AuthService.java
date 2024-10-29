@@ -1,4 +1,4 @@
-package com.example.contenthub.service;
+package com.example.contenthub.service.auth;
 
 import com.example.contenthub.dto.ResponseDTO;
 import com.example.contenthub.entity.User;

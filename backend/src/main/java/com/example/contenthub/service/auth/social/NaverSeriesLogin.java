@@ -1,4 +1,4 @@
-package com.example.contenthub.login;
+package com.example.contenthub.service.auth.social;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;

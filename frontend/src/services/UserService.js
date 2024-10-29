@@ -38,7 +38,7 @@ class UserService {
       withCredentials: true,
     }).then((res) => {
       const authHeader = res.headers.authorization;
-      
+      console.log("로그인 결과");
       console.log(res);
       const token = authHeader.startsWith('Bearer ') ? authHeader.substring(7) : authHeader;
       this.fetchToken(token);

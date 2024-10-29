@@ -1,4 +1,4 @@
-package com.example.contenthub.login;
+package com.example.contenthub.service.auth.social;
 
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;

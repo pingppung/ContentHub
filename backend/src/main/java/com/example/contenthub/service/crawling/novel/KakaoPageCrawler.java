@@ -1,8 +1,8 @@
-package com.example.contenthub.crawling.novel;
+package com.example.contenthub.service.crawling.novel;
 
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.exception.CrawlerException;
-import com.example.contenthub.login.KakaoPageLogin;
+import com.example.contenthub.service.auth.social.KakaoPageLogin;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.*;
@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.contenthub.crawling.WebDriverUtils.closeWebDriver;
-import static com.example.contenthub.crawling.WebDriverUtils.createWebDriver;
+import static com.example.contenthub.service.crawling.WebDriverUtils.closeWebDriver;
+import static com.example.contenthub.service.crawling.WebDriverUtils.createWebDriver;
 
 @Component
 @RequiredArgsConstructor

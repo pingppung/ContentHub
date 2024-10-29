@@ -13,7 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import com.example.contenthub.config.auth.PrincipalDetails;
+import com.example.contenthub.service.auth.principal.PrincipalDetails;
 import com.example.contenthub.dto.ResponseDTO;
 import com.example.contenthub.exception.JwtException;
 

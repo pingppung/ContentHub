@@ -1,7 +1,7 @@
-package com.example.contenthub.service;
+package com.example.contenthub.service.crawling;
 
-import com.example.contenthub.crawling.novel.KakaoPageCrawler;
-import com.example.contenthub.crawling.novel.NaverSeriesCrawler;
+import com.example.contenthub.service.crawling.novel.KakaoPageCrawler;
+import com.example.contenthub.service.crawling.novel.NaverSeriesCrawler;
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.dto.SiteDTO;
 import com.example.contenthub.entity.Novel;

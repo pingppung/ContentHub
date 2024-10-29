@@ -1,4 +1,4 @@
-package com.example.contenthub.config.auth;
+package com.example.contenthub.service.auth.principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

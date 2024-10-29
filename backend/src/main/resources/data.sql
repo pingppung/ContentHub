@@ -1,7 +1,8 @@
 insert into site (name, url)
-values ('카카오페이지', 'https://page.kakao.com')
-on conflict (name) do nothing;
+select '카카오페이지', 'https://page.kakao.com' FROM site
+where not exists (select 1 from site where name = '카카오페이지');
 
 insert into site (name, url)
-values ('네이버시리즈', 'https://series.naver.com')
-on conflict (name) do nothing;
+select '네이버시리즈', 'https://series.naver.com' FROM site
+where not exists (select 1 from site where name = '네이버시리즈');
+

@@ -1,13 +1,14 @@
 package com.example.contenthub.service;
 
-import com.example.contenthub.crawling.novel.KakaoPageCrawler;
-import com.example.contenthub.crawling.novel.NaverSeriesCrawler;
+import com.example.contenthub.service.crawling.novel.KakaoPageCrawler;
+import com.example.contenthub.service.crawling.novel.NaverSeriesCrawler;
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.entity.Novel;
 import com.example.contenthub.entity.NovelSite;
 import com.example.contenthub.repository.NovelRepository;
 import com.example.contenthub.repository.NovelSiteRepository;
 import com.example.contenthub.repository.SiteRepository;
+import com.example.contenthub.service.crawling.NovelCrawlerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -110,23 +111,23 @@ public class NovelCrawlerServiceTest {
         assertFalse(result.get(0).isAdultContent());
     }
 
-//    @DisplayName("같은 작품에 대해서 다른 사이트일 때 사이트 정보만 추가되는지 확인하는 테스트")
-//    @Test
-//    public void saveNovels_existingNovelTest() {
-//        when(novelRepository.findByTitle("Title")).thenReturn(mockNovel);
-//        when(novelRepository.save(any(Novel.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//        novelCrawlerService.saveNovels(List.of(content), "네이버시리즈");
-//
-//        ContentDTO newNovel = new ContentDTO("Title", "coverImg", "summary", "genre", false, "ID2");
-//        novelCrawlerService.saveNovels(List.of(newNovel), "카카오페이지");
-//
-//        Novel result = novelCrawlerService.getDataByTitle("Title");
-//        assertNotNull(result);
-//        assertEquals(2, result.getSites().size());
-//
-//        // 추가 검증: 두 개의 사이트 정보가 제대로 저장되었는지 확인
-//        List<NovelSite> sites = result.getSites();
-//        assertTrue(sites.stream().anyMatch(site -> "네이버시리즈".equals(site.getSite())));
-//        assertTrue(sites.stream().anyMatch(site -> "카카오페이지".equals(site.getSite())));
-//    }
+    @DisplayName("같은 작품에 대해서 다른 사이트일 때 사이트 정보만 추가되는지 확인하는 테스트")
+    @Test
+    public void saveNovels_existingNovelTest() {
+        when(novelRepository.findByTitle("Title")).thenReturn(mockNovel);
+        when(novelRepository.save(any(Novel.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        novelCrawlerService.saveNovels(List.of(content), "네이버시리즈");
+
+        ContentDTO newNovel = new ContentDTO("Title", "coverImg", "summary", "genre", false, "ID2");
+        novelCrawlerService.saveNovels(List.of(newNovel), "카카오페이지");
+
+        Novel result = novelCrawlerService.getDataByTitle("Title");
+        assertNotNull(result);
+        assertEquals(2, result.getSites().size());
+
+        // 추가 검증: 두 개의 사이트 정보가 제대로 저장되었는지 확인
+        List<NovelSite> sites = result.getSites();
+        assertTrue(sites.stream().anyMatch(site -> "네이버시리즈".equals(site.getSite())));
+        assertTrue(sites.stream().anyMatch(site -> "카카오페이지".equals(site.getSite())));
+    }
 }

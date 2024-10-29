@@ -1,8 +1,8 @@
-package com.example.contenthub.crawling.novel;
+package com.example.contenthub.service.crawling.novel;
 
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.exception.CrawlerException;
-import com.example.contenthub.login.NaverSeriesLogin;
+import com.example.contenthub.service.auth.social.NaverSeriesLogin;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.example.contenthub.crawling.WebDriverUtils.closeWebDriver;
-import static com.example.contenthub.crawling.WebDriverUtils.createWebDriver;
+import static com.example.contenthub.service.crawling.WebDriverUtils.closeWebDriver;
+import static com.example.contenthub.service.crawling.WebDriverUtils.createWebDriver;
 
 @Component
 @RequiredArgsConstructor

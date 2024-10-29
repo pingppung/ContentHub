@@ -1,4 +1,4 @@
-package com.example.contenthub.crawling;
+package com.example.contenthub.service.crawling;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.PageLoadStrategy;

@@ -1,4 +1,4 @@
-package com.example.contenthub.config.jwt;
+package com.example.contenthub.service.auth.jwt;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.example.contenthub.config.auth.PrincipalDetails;
+import com.example.contenthub.service.auth.principal.PrincipalDetails;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
 import com.example.contenthub.repository.UserRepository;

@@ -3,7 +3,7 @@ package com.example.contenthub.controller;
 import com.example.contenthub.dto.ResponseDTO;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
-import com.example.contenthub.service.AuthService;
+import com.example.contenthub.service.auth.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +21,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam User user) throws UserException {
-        try {
-            return ResponseEntity.ok(user);
-        } catch (UserException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody User user) throws UserException {
+//       // try {
+//        System.out.println(user.getUsername() +  " "+ user.getPassword());
+//            return ResponseEntity.ok(user);
+//       // } catch (UserException e) {
+//        //    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+//       // }
+//    }
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody User user) throws UserException {

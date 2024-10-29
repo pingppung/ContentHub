@@ -1,4 +1,4 @@
-package com.example.contenthub.config.auth;
+package com.example.contenthub.service.auth.principal;
 
 import java.util.ArrayList;
 import java.util.Collection;

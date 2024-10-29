@@ -1,7 +1,7 @@
 package com.example.contenthub.controller;
 
 import com.example.contenthub.dto.ContentDTO;
-import com.example.contenthub.service.NovelCrawlerService;
+import com.example.contenthub.service.crawling.NovelCrawlerService;
 
 import lombok.RequiredArgsConstructor;
 
