@@ -1,7 +1,7 @@
 package com.example.contenthub.constants;
 
-public enum Role {
-    GUEST,
-    USER,
-    ADMIN
+public enum RoleType {
+    ROLE_GUEST,
+    ROLE_USER,
+    ROLE_ADMIN
 }

@@ -1,28 +1,37 @@
+package com.example.contenthub.service.crawling;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-public class WebDriverManager {
-    private static WebDriver driver;
+@RequiredArgsConstructor
+public class CustomWebDriverManager {
+    private static WebDriver mainDriver;
+    private static WebDriver detailDriver;
 
-    public static WebDriver getDriver() {
-        if (driver == null) {
+    public static WebDriver[] getDriver() {
+        if (mainDriver == null && detailDriver == null) {
             try {
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("--remote-allow-origins=*");
-                driver = new ChromeDriver(options);
+                mainDriver = new ChromeDriver(options);
+                detailDriver = new ChromeDriver(options);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to create WebDriver instance", e);
             }
         }
-        return driver;
+        return new WebDriver[]{mainDriver, detailDriver};
     }
 
     public static void closeDriver() {
-        if (driver != null) {
-            driver.quit();
-            driver = null;
+        if (mainDriver != null) {
+            mainDriver.quit();
+            detailDriver.quit();
+            mainDriver = null;
+            detailDriver = null;
         }
     }
 }

@@ -1,19 +1,15 @@
 package com.example.contenthub.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Getter
 @Setter
 @MappedSuperclass
-@SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Content {
 
     @Id

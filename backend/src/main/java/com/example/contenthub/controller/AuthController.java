@@ -21,15 +21,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@RequestBody User user) throws UserException {
-//       // try {
-//        System.out.println(user.getUsername() +  " "+ user.getPassword());
-//            return ResponseEntity.ok(user);
-//       // } catch (UserException e) {
-//        //    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-//       // }
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User user) throws UserException {
+        try {
+            System.out.println(user.getUsername() +  " "+ user.getPassword());
+            return ResponseEntity.ok(user);
+        } catch (UserException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody User user) throws UserException {

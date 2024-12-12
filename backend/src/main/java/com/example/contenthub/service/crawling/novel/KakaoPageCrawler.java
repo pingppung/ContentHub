@@ -1,5 +1,6 @@
 package com.example.contenthub.service.crawling.novel;
 
+import com.example.contenthub.constants.SiteType;
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.service.auth.social.KakaoPageLogin;
@@ -15,9 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.contenthub.service.crawling.WebDriverUtils.closeWebDriver;
-import static com.example.contenthub.service.crawling.WebDriverUtils.createWebDriver;
-
 @Component
 @RequiredArgsConstructor
 public class KakaoPageCrawler {
@@ -25,30 +23,36 @@ public class KakaoPageCrawler {
 
     private final KakaoPageLogin kakaoLogin;
 
-    public List<ContentDTO> crawl() {
+    private WebDriver mainDriver;
+    private WebDriver detailDriver;
+
+    public List<ContentDTO> crawl(WebDriver mainDriver, WebDriver detailDriver) {
         List<ContentDTO> novels = new ArrayList<>();
-        WebDriver driver = createWebDriver();
-        WebDriver detailDriver = createWebDriver();
         try {
-            setUpDrivers(driver, detailDriver);
-            scrollPageToBottom(driver);
-            List<ContentDTO> list = getKakaoPageData(driver, detailDriver);
+            // 필요한 WebDriver 초기 설정
+            setUpDrivers(mainDriver, detailDriver);
+
+            scrollPageToBottom(mainDriver);
+            List<ContentDTO> list = getKakaoPageData(mainDriver, detailDriver);
             novels.addAll(list);
         } catch (TimeoutException e) {
             throw new CrawlerException(CrawlerException.ExceptionMessage.TIMEOUT_EXCEPTION.getMessage(), e);
         } catch (InterruptedException e) {
             throw new CrawlerException(CrawlerException.ExceptionMessage.UNEXPECTED_EXCEPTION.getMessage(), e);
-        } finally {
-            closeWebDriver(driver);
-            closeWebDriver(detailDriver);
         }
         return novels;
     }
 
-    private void setUpDrivers(WebDriver driver, WebDriver detailDriver) {
-        driver.get(BASE_URL);
+    private void setUpDrivers(WebDriver mainDriver, WebDriver detailDriver) {
+        // WebDriver를 클래스 필드에 할당하여 사용
+        this.mainDriver = mainDriver;
+        this.detailDriver = detailDriver;
+
+        // 페이지 열기 및 로그인
+        mainDriver.get(BASE_URL);
         detailDriver.get(BASE_URL);
-        kakaoLogin.activateBot(driver);
+
+        kakaoLogin.activateBot(mainDriver);
         kakaoLogin.activateBot(detailDriver);
     }
 
@@ -86,19 +90,16 @@ public class KakaoPageCrawler {
         Map<String, Object> data = gson.fromJson(jsonString, Map.class);
         Map<String, String> eventMeta = (Map<String, String>) data.get("eventMeta");
 
-        String productId = eventMeta.get("id");
+        String contentId = eventMeta.get("id");
         String title = eventMeta.get("name");
-
-//        if (novelCrawlerService.isDataExist(title, SiteType.KAKAO_PAGE.getName()))
-//            return null;
 
         String genre = eventMeta.get("subcategory");
         WebElement imgDiv = novel.findElement(By.xpath(".//div/div/img"));
         String coverImg = imgDiv.getAttribute("src");
         boolean adultContent = isAdultContent(element);
-        String summary = getNovelSummary(detailDriver, productId);
+        String summary = getNovelSummary(detailDriver, contentId);
 
-        return new ContentDTO(title, coverImg, summary, genre, adultContent, productId);
+        return new ContentDTO(title, coverImg, summary, genre, adultContent, SiteType.KAKAO_PAGE, contentId);
     }
 
     private boolean isAdultContent(WebElement element) {

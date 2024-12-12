@@ -1,5 +1,6 @@
 package com.example.contenthub.service.crawling.novel;
 
+import com.example.contenthub.constants.SiteType;
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.service.auth.social.NaverSeriesLogin;
@@ -18,9 +19,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.example.contenthub.service.crawling.WebDriverUtils.closeWebDriver;
-import static com.example.contenthub.service.crawling.WebDriverUtils.createWebDriver;
-
 @Component
 @RequiredArgsConstructor
 public class NaverSeriesCrawler {
@@ -32,34 +30,39 @@ public class NaverSeriesCrawler {
 
     private final NaverSeriesLogin naverLogin;
 
-    public List<ContentDTO> crawl() {
+    private WebDriver mainDriver;
+    private WebDriver detailDriver;
+
+    public List<ContentDTO> crawl(WebDriver mainDriver, WebDriver detailDriver) {
         List<ContentDTO> novels = new ArrayList<>();
-        WebDriver driver = createWebDriver();
-        WebDriver detailDriver = createWebDriver();
+
         try {
-            setUpDrivers(driver, detailDriver);
+            setUpDrivers(mainDriver, detailDriver);
 
-            for (int i = 1; i < 6; i++) {
-                navigateToPage(driver, i);
+            for (int i = 1; i < 2; i++) { //6
+                navigateToPage(mainDriver, i);
 
-                List<ContentDTO> list = getNaverSeriesData(driver, detailDriver);
+                List<ContentDTO> list = getNaverSeriesData(mainDriver, detailDriver);
                 novels.addAll(list);
             }
         } catch (TimeoutException e) {
             throw new CrawlerException(CrawlerException.ExceptionMessage.TIMEOUT_EXCEPTION.getMessage(), e);
         } catch (InterruptedException e) {
             throw new CrawlerException(CrawlerException.ExceptionMessage.UNEXPECTED_EXCEPTION.getMessage(), e);
-        } finally {
-            closeWebDriver(driver);
-            closeWebDriver(detailDriver);
         }
         return novels;
     }
 
-    private void setUpDrivers(WebDriver driver, WebDriver detailDriver) {
-        driver.get(BASE_URL);
+    private void setUpDrivers(WebDriver mainDriver, WebDriver detailDriver) {
+        // WebDriver를 클래스 필드에 할당하여 사용
+        this.mainDriver = mainDriver;
+        this.detailDriver = detailDriver;
+
+        // 페이지 열기 및 로그인
+        mainDriver.get(BASE_URL);
         detailDriver.get(BASE_URL + TYPECODEPARAM + "&" + CATEGORYCODEPARAM);
-        naverLogin.activateBot(driver);
+
+        naverLogin.activateBot(mainDriver);
         naverLogin.activateBot(detailDriver);
     }
 
@@ -88,14 +91,14 @@ public class NaverSeriesCrawler {
 //            return null;
 
         String detailHref = novel.getAttribute("href");
-        String productId = extractProductId(detailHref);
+        String contentId = extractProductId(detailHref);
         boolean adultContent = isAdultContent(element);
         WebElement coverImgElement = element.findElement(By.xpath(".//a/img"));
         String coverImg = coverImgElement.getAttribute("src");
         String summary = element.findElement(By.xpath(".//div[2]/p[2]")).getText();
         String genre = getNovelGenre(detailDriver, detailHref, adultContent);
 
-        return new ContentDTO(title, coverImg, summary, genre, adultContent, productId);
+        return new ContentDTO(title, coverImg, summary, genre, adultContent, SiteType.NAVER_SERIES, contentId);
     }
 
     private String getNovelGenre(WebDriver driver, String href, boolean isAdult) {

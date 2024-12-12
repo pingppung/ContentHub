@@ -15,9 +15,12 @@ function NovelHome() {
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
+    console.log(selectedGenre);
     //const apiUrl = selectedGenre !== "전체" ? `/novel?genre=${selectedGenre}` : "/novel";
     axios
-      .get("/api/novel", { params: { genre: selectedGenre } })
+      .get("/api/novel", { params: { genre: selectedGenre } }, {
+        headers: { "Content-Type": `application/json` },
+      })
       .then((res) => {
         setDate(res.data);
         setLoading(false);

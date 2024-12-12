@@ -3,7 +3,7 @@ import axios from "axios";
 import Header from "../components/Header";
 import styles from "./Home.module.css";
 
-function Home({ name, loggedIn, setLoggedIn }) {
+function Home({name}) {
   const [loading, setLoading] = useState(true);
   const [data, setDate] = useState([]);
 
@@ -18,7 +18,7 @@ function Home({ name, loggedIn, setLoggedIn }) {
           <span>Loading...</span>
         </div>
       ) : (
-        <Header name={name} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+            <div> 홈 페이지 !!! </div>
       )}
     </div>
   );

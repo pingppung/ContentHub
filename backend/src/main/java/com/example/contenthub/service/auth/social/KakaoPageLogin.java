@@ -45,6 +45,7 @@ public class KakaoPageLogin {
             Thread.sleep(1500);
 
             WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(By.className("btn_agree")));
+            Thread.sleep(1500);
             continueButton.click();
             wait.until(ExpectedConditions.urlContains("/menu"));
         } catch (Exception e) {

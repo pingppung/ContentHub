@@ -21,11 +21,11 @@ function NovelDetail({ novelInfo, open, close }) {
   };
 
     const getSiteUrl = (siteName) => {
-      const siteInfo = Object.values(NovelSite).find(site => site.name === siteName);
-      console.log(siteInfo);
-      if (siteInfo) {
-          return siteInfo.baseUrl;
-      } else {
+      // const siteInfo = Object.values(NovelSite).find(site => site.name === siteName);
+      // console.log(siteInfo);
+      if (siteName == "NaverSeries") {
+        return "https://series.naver.com/novel/detail.series?productNo=";
+      }else {
           return 'Unknown site';
       }
   }
@@ -43,9 +43,9 @@ function NovelDetail({ novelInfo, open, close }) {
               <h4 className={styles.novel__genre}>{novelInfo.genre}</h4>
               <p>{novelInfo.summary}</p>
             </div>
-              {novelInfo.siteDTOs.map((item, index) => (
+              {novelInfo.links.map((item, index) => (
               <p key={index}>
-                {item.siteName}: <a href={getSiteUrl(item.siteName)+item.productId}>보러가기</a>
+                {item.siteName}: <a href={getSiteUrl(item.siteName) + item.contentId}>보러가기</a>
               </p>
             ))}
           </div>
@@ -67,7 +67,7 @@ NovelDetail.propTypes = {
     coverImg: PropTypes.string.isRequired,
     summary: PropTypes.string.isRequired,
     genre: PropTypes.string.isRequired,
-    siteDTOs: PropTypes.array.isRequired,
+    links: PropTypes.array.isRequired,
   }).isRequired,
   open: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,

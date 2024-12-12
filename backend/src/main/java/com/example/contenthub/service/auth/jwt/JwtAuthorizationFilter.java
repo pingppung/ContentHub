@@ -31,7 +31,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private final TokenProvider tokenProvider;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository,
-            TokenProvider tokenProvider, String key) {
+                                  TokenProvider tokenProvider, String key) {
         super(authenticationManager);
         this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
@@ -63,7 +63,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (username != null) {
             User userEntity = userRepository.findByUsername(username);
             PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
-            log.info("User roles: " + userEntity.getRole()); // 권한 출력
+            log.info("User roles: " + userEntity.getRoles()); // 권한 출력
 
             // 이미 username으로 사용자가 인증됐기 때문에 강제로 authentication 만드는 중
             // 비밀번호를 안넣고 null을 넣어도 상관없다.
@@ -72,9 +72,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
             // 강제로 시큐리티의 세션에 접근하여 Authentication 객체를 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
 
-        chain.doFilter(request, response);
+            chain.doFilter(request, response);
+        } else {
+            super.doFilterInternal(request, response, chain);
+        }
     }
 
 }
