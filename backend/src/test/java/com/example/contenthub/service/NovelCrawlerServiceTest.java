@@ -3,9 +3,8 @@ package com.example.contenthub.service;
 import com.example.contenthub.service.crawling.novel.KakaoPageCrawler;
 import com.example.contenthub.service.crawling.novel.NaverSeriesCrawler;
 import com.example.contenthub.dto.ContentDTO;
-import com.example.contenthub.entity.Novel;
 import com.example.contenthub.entity.NovelSite;
-import com.example.contenthub.repository.NovelRepository;
+import com.example.contenthub.repository.ContentRepository;
 import com.example.contenthub.repository.NovelSiteRepository;
 import com.example.contenthub.repository.SiteRepository;
 import com.example.contenthub.service.crawling.NovelCrawlerService;
@@ -27,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class NovelCrawlerServiceTest {
 
     @Mock
-    private NovelRepository novelRepository;
+    private ContentRepository contentRepository;
 
     @Mock
     private SiteRepository siteRepository;
@@ -62,20 +61,20 @@ public class NovelCrawlerServiceTest {
         list.add(content);
 
         // Given: 초기 상태에서는 소설이 존재하지 않음
-        when(novelRepository.findByTitle("Title")).thenReturn(null);
+        when(contentRepository.findByTitle("Title")).thenReturn(null);
 
         // When: 소설을 저장
         novelCrawlerService.saveNovels(list, "네이버시리즈");
 
         // Then: 소설이 저장되었는지 확인
-        verify(novelRepository, times(1)).save(any(Novel.class));
+        verify(contentRepository, times(1)).save(any(Novel.class));
     }
 
     @DisplayName("소설 조회 테스트")
     @Test
     void getDataByTitleTest() {
         // Given: 소설이 존재한다고 가정
-        when(novelRepository.findByTitle("Title")).thenReturn(mockNovel);
+        when(contentRepository.findByTitle("Title")).thenReturn(mockNovel);
 
         // When: 소설을 조회
         Novel result = novelCrawlerService.getDataByTitle("Title");
@@ -97,7 +96,7 @@ public class NovelCrawlerServiceTest {
                 content.getGenre(), content.isAdultContent());
 
         // Given: 데이터베이스에 소설이 존재한다고 가정
-        when(novelRepository.findAll()).thenReturn(List.of(mockNovel, mockNovel2));
+        when(contentRepository.findAll()).thenReturn(List.of(mockNovel, mockNovel2));
 
         // When: 전체 데이터 조회
         List<ContentDTO> result = novelCrawlerService.getAllData();
@@ -114,8 +113,8 @@ public class NovelCrawlerServiceTest {
     @DisplayName("같은 작품에 대해서 다른 사이트일 때 사이트 정보만 추가되는지 확인하는 테스트")
     @Test
     public void saveNovels_existingNovelTest() {
-        when(novelRepository.findByTitle("Title")).thenReturn(mockNovel);
-        when(novelRepository.save(any(Novel.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(contentRepository.findByTitle("Title")).thenReturn(mockNovel);
+        when(contentRepository.save(any(Novel.class))).thenAnswer(invocation -> invocation.getArgument(0));
         novelCrawlerService.saveNovels(List.of(content), "네이버시리즈");
 
         ContentDTO newNovel = new ContentDTO("Title", "coverImg", "summary", "genre", false, "ID2");

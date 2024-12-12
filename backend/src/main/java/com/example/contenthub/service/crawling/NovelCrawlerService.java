@@ -1,13 +1,13 @@
 package com.example.contenthub.service.crawling;
 
+import com.example.contenthub.entity.Content;
 import com.example.contenthub.service.crawling.novel.KakaoPageCrawler;
 import com.example.contenthub.service.crawling.novel.NaverSeriesCrawler;
 import com.example.contenthub.dto.ContentDTO;
 import com.example.contenthub.dto.SiteDTO;
-import com.example.contenthub.entity.Novel;
 import com.example.contenthub.entity.NovelSite;
 import com.example.contenthub.entity.Site;
-import com.example.contenthub.repository.NovelRepository;
+import com.example.contenthub.repository.ContentRepository;
 import com.example.contenthub.repository.NovelSiteRepository;
 import com.example.contenthub.repository.SiteRepository;
 import jakarta.transaction.Transactional;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NovelCrawlerService {
 
-    private final NovelRepository novelRepository;
+    private final ContentRepository contentRepository;
     private final SiteRepository siteRepository;
     private final NovelSiteRepository novelSiteRepository;
     private final NaverSeriesCrawler naverSeriesCrawler;
@@ -32,37 +32,40 @@ public class NovelCrawlerService {
         List<ContentDTO> naverSeriesNovels = naverSeriesCrawler.crawl();
         List<ContentDTO> kakaoPageNovels = kakaoPageCrawler.crawl();
 
-        saveNovels(naverSeriesNovels, "네이버시리즈");
-        saveNovels(kakaoPageNovels, "카카오페이지");
+        saveContents(naverSeriesNovels, "네이버시리즈");
+        saveContents(kakaoPageNovels, "카카오페이지");
     }
 
     @Transactional
-    public void saveNovels(List<ContentDTO> contents, String siteName) {
-
+    public void saveContents(List<ContentDTO> contents, String siteName) {
         for (ContentDTO content : contents) {
-            Novel existingNovel = getDataByTitle(content.getTitle());
-            // 작품이 없는 경우에만 작품추가
-            if (existingNovel == null) {
-                Novel novel = new Novel(content.getTitle(), content.getCoverImg(), content.getSummary(),
-                        content.getGenre(), content.isAdultContent());
+            Content existingNovel = getDataByTitle(content.getTitle());
+
+            if (existingNovel == null) { // 작품이 없는 경우에만 작품추가
+                Content novel = new Content(
+                        content.getTitle(),
+                        content.getCoverImg(),
+                        content.getSummary(),
+                        content.getGenre(),
+                        content.isAdultContent());
                 saveNovelSite(novel, siteName, content.getProductId());
-                novelRepository.save(novel);
+                contentRepository.save(novel);
             } else { // 작품이 이미 존재하는 경우엔 사이트 추가만
                 saveNovelSite(existingNovel, siteName, content.getProductId());
-                novelRepository.save(existingNovel); // 작품 정보 업데이트
+                contentRepository.save(existingNovel); // 작품 정보 업데이트
             }
 
         }
     }
 
     public boolean isDataExist(String title, String site) {
-        Novel novelData = novelRepository.findByTitle(title);
+        Content novelData = contentRepository.findByTitle(title);
         return novelData != null && novelData.hasSite(site);
     }
 
-    public List<ContentDTO> getContentDTOList(List<Novel> list) {
+    public List<ContentDTO> getContentDTOList(List<Content> list) {
         List<ContentDTO> contents = new ArrayList<>();
-        for (Novel n : list) {
+        for (Content n : list) {
             ContentDTO content = new ContentDTO(n.getTitle(), n.getCoverImg(), n.getSummary(), n.getGenre(),
                     n.isAdultContent(), new ArrayList<>());
             for (NovelSite site : n.getSites()) {
@@ -75,27 +78,27 @@ public class NovelCrawlerService {
     }
 
     public List<ContentDTO> getAllData() {
-        List<Novel> list = novelRepository.findAll();
+        List<Content> list = contentRepository.findAll();
         return getContentDTOList(list);
     }
 
     public List<ContentDTO> getDataByGenre(String genre) {
-        List<Novel> list = novelRepository.findByGenre(genre);
+        List<Content> list = contentRepository.findByGenre(genre);
         return getContentDTOList(list);
     }
 
-    public Novel getDataByTitle(String title) {
-        return novelRepository.findByTitle(title);
+    public Content getDataByTitle(String title) {
+        return contentRepository.findByTitle(title);
     }
 
     public List<ContentDTO> getDataByTitleContaining(String title) {
-        List<Novel> list = novelRepository.findByTitleContaining(title);
+        List<Content> list = contentRepository.findByTitleContaining(title);
         return getContentDTOList(list);
     }
 
     @Transactional
     public void deleteDataByTitle(String title) {
-        novelRepository.deleteByTitle(title);
+        contentRepository.deleteByTitle(title);
     }
 
     public void saveNovelSite(Novel novel, String siteName, String productId) {

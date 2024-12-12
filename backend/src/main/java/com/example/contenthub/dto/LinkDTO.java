@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SiteDTO {
     private String siteName;
-    private String productId;
+    private String contentId;
+    private String url;
 }
 
