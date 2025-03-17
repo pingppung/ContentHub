@@ -66,8 +66,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilter(corsFilter) // 1. 컨트롤러에 @CrossOrigin 하는 방법 - 인증 X, 2. 시큐리티 필터에 등록 - 인증O
                 .addFilter(new JwtAuthenticationFilter(authenticationManager, tokenProvider))
-                .addFilter(
-                        new JwtAuthorizationFilter(authenticationManager, userRepository, tokenProvider, SECRET_KEY));
+                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager, userRepository, tokenProvider, SECRET_KEY), JwtAuthenticationFilter.class);
         http.sessionManagement( // JWT 방식은 세션저장을 사용하지 않기 때문에 꺼주기.
                 sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authorizeHttpRequests(authorize -> authorize
@@ -77,7 +76,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll());
         http.formLogin(formLogin -> formLogin
                 .loginPage("/login")
-                .usernameParameter("username")
+                .usernameParameter("userId")
                 .passwordParameter("password")
                 .loginProcessingUrl("/auth/login") // 주소가 호출되면 시큐리티가 낚아채서 대신 로그인 진행
                 .successHandler(successHandler())

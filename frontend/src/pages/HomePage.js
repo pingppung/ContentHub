@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Header from "../components/Header";
-import styles from "./Home.module.css";
+import styles from "./css/Home.module.css";
 
-function Home({name}) {
+function Home() {
   const [loading, setLoading] = useState(true);
-  const [data, setDate] = useState([]);
 
   useEffect(() => {
     setLoading(false);
@@ -13,6 +11,7 @@ function Home({name}) {
 
   return (
     <div className={styles.relactive}>
+      <Header />
       {loading ? (
         <div className={"loader"}>
           <span>Loading...</span>

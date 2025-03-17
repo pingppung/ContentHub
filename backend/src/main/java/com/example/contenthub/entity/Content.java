@@ -1,48 +1,49 @@
 package com.example.contenthub.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-@Setter
-@MappedSuperclass
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class Content {
+@Table(name = "contents")
+public class Content {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long contentId;
+    private int id;
 
-    @Column(name = "title", nullable = false)
     private String title;
-
-    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    @Column(name = "image_url", columnDefinition = "TEXT")
-    private String imageUrl;
-
-    @Column(name = "adult_content", nullable = false)
-    private boolean adultContent;
-
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "content_type", nullable = false)
-//    private ContentType contentType;
-
-    @Column(name = "genre", nullable = false)
     private String genre;
 
+    @Column(name = "cover_image")
+    private String coverImg;
 
-    public Content(String title, String summary, String coverImg, boolean adultContent, String genre) {
+    private String category;
+    
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<ContentSite> sites = new ArrayList<>();
+
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
+
+    public Content(String title, String description, String genre, String coverImg, String category) {
         this.title = title;
-        this.description = summary;  // description을 summary로 설정
-        this.imageUrl = coverImg;    // coverImg를 imageUrl로 설정
-        this.adultContent = adultContent;
+        this.description = description;
         this.genre = genre;
+        this.coverImg = coverImg;
+        this.category = category;
     }
 
+    public void addContentSite(String contentID, boolean isAdultContent, Site site) {
+        ContentSite contentSite = new ContentSite(contentID, isAdultContent, this, site);
+        sites.add(contentSite);
+    }
 }

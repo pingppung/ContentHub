@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.contenthub.entity.User;
@@ -30,9 +31,10 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(r -> {
-            authorities.add(() -> r.name());
-        });
+        // user.getRole().forEach(r -> {
+        //     authorities.add(() -> r.name());
+        // });
+        authorities.add(new SimpleGrantedAuthority(user.getRole()));
         return authorities;
     }
 
@@ -43,7 +45,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getUserId();
     }
 
     @Override

@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import styles from "./css/Novel.module.css";
-import { PiHeart } from "react-icons/pi";
-import { PiHeartFill } from "react-icons/pi";
 
-function Novel({ title, coverImg, summary, genre, adultContent, openNovelDetail }) {
+function Content({ title, coverImg, summary, genre, adultContent, openNovelDetail }) {
+
   const handleClick = () => {
     openNovelDetail({ title, coverImg, summary, genre});
   };
@@ -21,13 +20,13 @@ function Novel({ title, coverImg, summary, genre, adultContent, openNovelDetail 
   );
 }
 
-Novel.propTypes = {
-  title: PropTypes.string.isRequired,
-  coverImg: PropTypes.string.isRequired,
-  summary: PropTypes.string.isRequired,
-  genre: PropTypes.string.isRequired,
-  adultContent: PropTypes.bool.isRequired,
-  openNovelDetail: PropTypes.func.isRequired,
-};
+// Content.propTypes = {
+//   title: PropTypes.string.isRequired,
+//   coverImg: PropTypes.string.isRequired,
+//   summary: PropTypes.string.isRequired,
+//   genre: PropTypes.string.isRequired,
+//   adultContent: PropTypes.bool.isRequired,
+//   openNovelDetail: PropTypes.func.isRequired,
+// };
 
-export default Novel;
+export default Content;

@@ -50,13 +50,13 @@ public class TokenProvider {
                 .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME))
                 .claim(AUTHORIZATION_KEY, authorities)
                 .claim("id", principalDetails.getUser().getId())
-                .claim("username", principalDetails.getUser().getUsername())
+                .claim("username", principalDetails.getUser().getUserId())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     // username값
-    public String getUsernameFromToken(String token) {
+    public String getUserIdFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
@@ -70,9 +70,9 @@ public class TokenProvider {
                 .stream(claims.get(AUTHORIZATION_KEY).toString().split(","))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        String username = getUsernameFromToken(token);
+        String username = getUserIdFromToken(token);
         UserDetails userDetails = new User(username, "", authorities);
-
+            System.out.println(userDetails);
         return ResponseDTO.<UserDetails>builder()
                 .status(200)
                 .message("User details retrieved successfully")

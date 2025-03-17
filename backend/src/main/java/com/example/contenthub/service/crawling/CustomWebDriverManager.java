@@ -9,29 +9,28 @@ import org.openqa.selenium.chrome.ChromeOptions;
 @RequiredArgsConstructor
 public class CustomWebDriverManager {
     private static WebDriver mainDriver;
-    private static WebDriver detailDriver;
 
-    public static WebDriver[] getDriver() {
-        if (mainDriver == null && detailDriver == null) {
+    public static WebDriver getDriver() {
+        if (mainDriver == null) {
             try {
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("--remote-allow-origins=*");
                 mainDriver = new ChromeDriver(options);
-                detailDriver = new ChromeDriver(options);
+               // detailDriver = new ChromeDriver(options);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to create WebDriver instance", e);
             }
         }
-        return new WebDriver[]{mainDriver, detailDriver};
+        return mainDriver;
     }
 
     public static void closeDriver() {
         if (mainDriver != null) {
             mainDriver.quit();
-            detailDriver.quit();
+            //detailDriver.quit();
             mainDriver = null;
-            detailDriver = null;
+           // detailDriver = null;
         }
     }
 }

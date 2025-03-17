@@ -1,34 +1,19 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import UserService from "../services/UserService";
+import AuthService from "../services/AuthService";
 import styles from "./css/LoginForm.module.css";
 
-function LoginForm({ setLoggedIn, setUserName }) {
-  const [name, setName] = useState("");
-  const [pwd, setPwd] = useState("");
-  const navigate = useNavigate();
+function LoginForm({ onAuthSuccess }) {
+  const [userId, setId] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    let user = {
-      username: name,
-      password: pwd,
-    };
-    UserService.login(user);
-    setUserName(name);
-    setLoggedIn(true);
-    navigate('/');
-      // .then((res) => {
-      //    console.log(res.headers);
-      //   // UserService.fetchToken(res.data.token);
-      //   // setLoggedIn(true);
-      //   // setUserName(name);
-      //   navigate('/');
-      // })
-      // .catch((error) => {
-      //   console.log(error);
-      // });
-      
+    try {
+      const res = await AuthService.login({ userId, password });
+      onAuthSuccess(userId); // 인증 성공 시 부모 컴포넌트에 전달
+    } catch (error) {
+      console.error("로그인 오류 : ", error);
+    }
   };
 
   return (
@@ -40,9 +25,8 @@ function LoginForm({ setLoggedIn, setUserName }) {
             <input
               required
               label="아이디"
-              name="username"
-              autoComplete="username"
-              onChange={(e) => setName(e.target.value)}
+              autoComplete="id"
+              onChange={(e) => setId(e.target.value)}
             />
           </div>
 
@@ -53,7 +37,7 @@ function LoginForm({ setLoggedIn, setUserName }) {
               type="password"
               name="password"
               autoComplete="current-password"
-              onChange={(e) => setPwd(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <button className={styles.loginBtn} onClick={handleLogin}>
@@ -61,7 +45,7 @@ function LoginForm({ setLoggedIn, setUserName }) {
           </button>
           <div className={styles.signupBtn}>
             아직 계정이 없으신가요?
-            <a href="/signup">회원 가입</a>
+            <a href="/auth/signup">회원 가입</a>
           </div>
         </div>
       </form>

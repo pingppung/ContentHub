@@ -1,11 +1,13 @@
 package com.example.contenthub.service.crawling.novel;
 
-import com.example.contenthub.constants.SiteType;
-import com.example.contenthub.dto.ContentDTO;
+import com.example.contenthub.constants.crawling.NaverNovelXPath;
+import com.example.contenthub.dto.ContentCrawlDTO;
 import com.example.contenthub.exception.CrawlerException;
 import com.example.contenthub.service.auth.social.NaverSeriesLogin;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -22,28 +24,25 @@ import java.util.regex.Pattern;
 @Component
 @RequiredArgsConstructor
 public class NaverSeriesCrawler {
-
-    private static final String BASE_URL = "https://series.naver.com/novel/top100List.series?";
-    private static final String TYPECODEPARAM = "rankingTypeCode=HOURLY";
-    private static final String CATEGORYCODEPARAM = "categoryCode=ALL";
-    private static final String PAGEPARAM = "page=";
-
     private final NaverSeriesLogin naverLogin;
 
-    private WebDriver mainDriver;
-    private WebDriver detailDriver;
-
-    public List<ContentDTO> crawl(WebDriver mainDriver, WebDriver detailDriver) {
-        List<ContentDTO> novels = new ArrayList<>();
-
+    public List<ContentCrawlDTO> crawl(WebDriver mainDriver) {
+        List<ContentCrawlDTO> novels = new ArrayList<>();
         try {
-            setUpDrivers(mainDriver, detailDriver);
+            setUpDrivers(mainDriver);
+            int totalPages = getLastPageNumber(mainDriver);
+            List<String> novelLinks = getNaverSeriesData(mainDriver, totalPages);
 
-            for (int i = 1; i < 2; i++) { //6
-                navigateToPage(mainDriver, i);
-
-                List<ContentDTO> list = getNaverSeriesData(mainDriver, detailDriver);
-                novels.addAll(list);
+            for (String href : novelLinks) {
+                try {
+                    ContentCrawlDTO content = extractNovelData(href, mainDriver);
+                    novels.add(content);
+                } catch (TimeoutException e) {
+                    System.err.println("TimeoutException 발생 - 다음 항목으로 진행: " + href);
+                } catch (Exception e) {
+                    System.err.println("예상치 못한 오류 발생 - 다음 항목으로 진행: " + href);
+                    //e.printStackTrace();
+                }
             }
         } catch (TimeoutException e) {
             throw new CrawlerException(CrawlerException.ExceptionMessage.TIMEOUT_EXCEPTION.getMessage(), e);
@@ -53,85 +52,74 @@ public class NaverSeriesCrawler {
         return novels;
     }
 
-    private void setUpDrivers(WebDriver mainDriver, WebDriver detailDriver) {
-        // WebDriver를 클래스 필드에 할당하여 사용
-        this.mainDriver = mainDriver;
-        this.detailDriver = detailDriver;
-
-        // 페이지 열기 및 로그인
-        mainDriver.get(BASE_URL);
-        detailDriver.get(BASE_URL + TYPECODEPARAM + "&" + CATEGORYCODEPARAM);
-
+    private void setUpDrivers(WebDriver mainDriver) {
+        mainDriver.get(NaverNovelXPath.URL.getXpath());
         naverLogin.activateBot(mainDriver);
-        naverLogin.activateBot(detailDriver);
     }
 
-    private void navigateToPage(WebDriver driver, int page) {
-        String url = BASE_URL + TYPECODEPARAM + "&" + CATEGORYCODEPARAM + "&" + PAGEPARAM + page;
+    public int getLastPageNumber(WebDriver driver) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebElement pagination = wait.until(
+                    ExpectedConditions.presenceOfElementLocated(By.xpath(NaverNovelXPath.PAGE_COUNT.getXpath())));
+            List<WebElement> pageLinks = pagination.findElements(By.tagName("a"));
+            int totalPages = pageLinks.size();
+            return totalPages;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1;
+        }
+    }
+
+    private void navigateToPage(WebDriver driver, String url) {
         driver.get(url);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.urlToBe(url));
     }
 
-    private List<ContentDTO> getNaverSeriesData(WebDriver driver, WebDriver detailDriver) throws InterruptedException {
-        List<ContentDTO> novels = new ArrayList<>();
-        List<WebElement> novelElements = driver.findElements(By.xpath("//*[@id=\"content\"]/div/ul/li"));
-        for (WebElement element : novelElements) {
-            ContentDTO contentData = extractNovelData(element, detailDriver);
-            if (contentData != null)
-                novels.add(contentData);
+    private List<String> getNaverSeriesData(WebDriver webDriver, int totalPages) throws InterruptedException {
+        List<String> novelLinks = new ArrayList<>();
+        for (int i = 1; i <= totalPages; i++) {
+            String url = NaverNovelXPath.URL.getXpath() + i;
+            navigateToPage(webDriver, url);
+
+            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
+            List<WebElement> elements = wait.until(driver -> driver.findElements(By.xpath(NaverNovelXPath.LIST.getXpath())));
+            for (WebElement el : elements) {
+                String href = el.findElement(By.xpath(".//a")).getAttribute("href");
+                novelLinks.add(href);
+            }
         }
-        return novels;
+        return novelLinks;
     }
 
-    private ContentDTO extractNovelData(WebElement element, WebDriver detailDriver) {
-        WebElement novel = element.findElement(By.xpath(".//div[2]/h3/a"));
-        String title = extractTitle(novel.getText());
-//        if (novelCrawlerService.isDataExist(title, SiteType.NAVER_SERIES.getName()))
-//            return null;
+    private ContentCrawlDTO extractNovelData(String detailHref, WebDriver webdriver) {
+        String contentId = extractContentId(detailHref);
+        String url = NaverNovelXPath.DETAIL_URL.getXpath() + contentId;
+        // 상세 페이지 이동
+        navigateToPage(webdriver, url);
 
-        String detailHref = novel.getAttribute("href");
-        String contentId = extractProductId(detailHref);
-        boolean adultContent = isAdultContent(element);
-        WebElement coverImgElement = element.findElement(By.xpath(".//a/img"));
-        String coverImg = coverImgElement.getAttribute("src");
-        String summary = element.findElement(By.xpath(".//div[2]/p[2]")).getText();
-        String genre = getNovelGenre(detailDriver, detailHref, adultContent);
+        WebDriverWait wait = new WebDriverWait(webdriver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(NaverNovelXPath.TITLE.getXpath())));
 
-        return new ContentDTO(title, coverImg, summary, genre, adultContent, SiteType.NAVER_SERIES, contentId);
+        // 상세 정보 추출
+        String title = extractTitle(webdriver.findElement(By.xpath(NaverNovelXPath.TITLE.getXpath())).getText());
+        String description = getDescription(webdriver);
+        String coverImg = webdriver.findElement(By.xpath(NaverNovelXPath.COVER_IMG.getXpath())).getAttribute("src");
+        boolean isAdultContent = isAdultContent(webdriver);
+        String genre = webdriver.findElement(By.xpath(NaverNovelXPath.GENRE.getXpath())).getText();
+        return new ContentCrawlDTO(title, description, coverImg, genre, isAdultContent, contentId);
     }
 
-    private String getNovelGenre(WebDriver driver, String href, boolean isAdult) {
-        try {
-            String detailURL = href;
-
-            driver.get(detailURL);
-
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            By genreLocator = By.xpath("//*[@id=\"content\"]/ul[1]/li/ul/li[2]/span/a");
-            WebElement genreElement = wait.until(ExpectedConditions.presenceOfElementLocated(genreLocator));
-
-            return genreElement.getText();
-        } catch (TimeoutException e) {
-            throw new CrawlerException(CrawlerException.ExceptionMessage.TIMEOUT_EXCEPTION.getMessage(), e);
-        }
+    private boolean isAdultContent(WebDriver driver) {
+        return driver.findElements(By.xpath(NaverNovelXPath.IS_ADULT.getXpath())).size() > 0;
     }
 
-    private boolean isAdultContent(WebElement element) {
-        try {
-            element.findElement(By.xpath(".//div[2]/h3/em[@class='ico n19']"));
-            return true;
-        } catch (org.openqa.selenium.NoSuchElementException e) {
-            return false;
-        }
-    }
-
-    // 정규표현식을 사용하여 [ ... ] 패턴을 찾아내고 해당 부분을 제거
     private static String extractTitle(String title) {
         return title.replaceAll("\\[.*?\\]", "").trim();
     }
 
-    private String extractProductId(String input) {
+    private String extractContentId(String input) {
         Pattern pattern = Pattern.compile("\\d+");
         Matcher matcher = pattern.matcher(input);
 
@@ -142,4 +130,26 @@ public class NaverSeriesCrawler {
             return null;
         }
     }
+
+    private String getDescription(WebDriver driver) {
+        try {
+
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            WebElement element = driver.findElement(By.xpath(NaverNovelXPath.DESCRIPTION_WITH_MORE.getXpath()));
+            String des = (String) js.executeScript("return arguments[0].innerText.trim();", element);
+            return cleanText(des);
+        } catch (NoSuchElementException e) {
+            try {
+                return driver.findElement(By.xpath(NaverNovelXPath.DESCRIPTION_NO_MORE.getXpath())).getText();
+            } catch (NoSuchElementException ex) {
+                return "설명 없음";
+            }
+        }
+    }
+    private String cleanText(String text) {
+        return text.replaceAll("[\\u00A0\\u200B\\u200C\\u200D\\uFEFF]", " ")
+                    .replace("접기", "")
+                    .trim();
+    }
+
 }

@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 예시
             // 토큰 생성 - 원래는 로그인 할 때 자동으로 만들어지게 할거임
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    user.getUsername(), user.getPassword());
+                    user.getUserId(), user.getPassword());
             // PrincipalDetailsService의 loadUserByUserName()함수가 실행된 후 정상이면 authentication이
             // 리턴
             // authentication => 로그인한 정보가 담김
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             // 로그인 정상적으로 되었다는 뜻
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            log.info("로그인 완료됨 : " + principalDetails.getUser().getUsername());
+            log.info("로그인 완료됨 : " + principalDetails.getUser().getUserId());
             // authentication 객체가 session영역에 저장해야하고 그 방법은 return 해주면 됨
             // 리턴의 이유는 권한 관리를 security가 대신 해주기 때문에 편하려고 하는거임
             // 굳이 JWT 토큰을 사용하면서 세션을 만들 이유가 없음. 근데 단지 권한 처리 때문에 session넣어줌

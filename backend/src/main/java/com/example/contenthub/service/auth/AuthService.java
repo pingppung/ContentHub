@@ -1,6 +1,5 @@
 package com.example.contenthub.service.auth;
 
-import com.example.contenthub.constants.RoleType;
 import com.example.contenthub.dto.ResponseDTO;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
@@ -14,8 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
 
 //자격 증명 확인 후 유효성 검증, 로그인 / 회원가입 처리
 @Service
@@ -28,17 +25,17 @@ public class AuthService {
     private final TokenProvider tokenProvider;
 
     public void saveUser(User request) throws UserException {
-        User existingUser = userRepository.findByUsername(request.getUsername());
+        User existingUser = userRepository.findByUserId(request.getUserId());
         if (existingUser != null) {
             // 이미 존재하는 사용자인 경우 예외 발생
             throw UserException.duplicateUserException();
         }
-        Set<RoleType> roles = new HashSet<>();
-        roles.add(RoleType.ROLE_USER); // enum 타입으로 ROLE_USER 추가
+        //Set<RoleType> roles = new HashSet<>();
+        //roles.add(RoleType.ROLE_USER); // enum 타입으로 ROLE_USER 추가
 
-        User user = User.builder().username(request.getUsername())
+        User user = User.builder().userId(request.getUserId())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roles(roles)
+                .role("ROLE_USER")
                 .build();
         userRepository.save(user);
     }
