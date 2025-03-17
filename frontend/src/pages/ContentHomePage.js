@@ -28,7 +28,7 @@ function ContentHome() {
       console.log(res);
       setLoading(false);
     });
-  }, [category, nselectedGenre, searchInput]);
+  }, [category, selectedGenre, searchInput]);
 
 
   const openContentDetail = (content) => {
