@@ -1,29 +1,19 @@
 import React, { useState } from "react";
 import styles from "./css/LoginForm.module.css";
-import { useNavigate } from "react-router-dom";
-import UserService from "../services/UserService";
+import AuthService from "../services/AuthService";
 
-function SignupForm() {
-  const [name, setName] = useState("");
-  const [pwd, setPwd] = useState("");
-  const navigate = useNavigate();
+function SignupForm({ onAuthSuccess }) {
+  const [userId, setId] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSignUp = (event) => {
+  const handleSignUp = async (event) => {
     event.preventDefault();
-    let user = {
-      username: name,
-      password: pwd,
-    };
-    UserService.signUp(user)
-      .then((res) => {
-        navigate(`/login`);
-        window.alert("회원가입에 성공했습니다");
-      })
-      .catch((error) => {
-        // 오류 발생 시 처리
-        window.alert(error.response.data);
-        console.error("회원가입 오류:", error);
-      });
+    try {
+      await AuthService.signUp({ userId, password });
+      onAuthSuccess({ userId, password }); // 회원가입 성공 처리
+    } catch (error) {
+      console.error("회원가입 오류 :", error);
+    }
   };
 
   return (
@@ -35,8 +25,8 @@ function SignupForm() {
             <input
               required
               label="아이디"
-              autoComplete="username"
-              onChange={(e) => setName(e.target.value)}
+              autoComplete="id"
+              onChange={(e) => setId(e.target.value)}
             />
           </div>
 
@@ -46,7 +36,7 @@ function SignupForm() {
               label="비밀번호"
               type="password"
               autoComplete="current-password"
-              onChange={(e) => setPwd(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <button className={styles.signupBtn} onClick={handleSignUp}>

@@ -3,7 +3,7 @@ package com.example.contenthub.controller;
 import com.example.contenthub.dto.ResponseDTO;
 import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
-import com.example.contenthub.service.AuthService;
+import com.example.contenthub.service.auth.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,10 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam User user) throws UserException {
+    public ResponseEntity<?> login(@RequestBody User user) throws UserException {
         try {
+            System.out.println("로그인 중");
+            System.out.println(user.getUserId() + " " + user.getPassword());
             return ResponseEntity.ok(user);
         } catch (UserException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -33,10 +35,12 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody User user) throws UserException {
         try {
-            System.out.println("user sign " + user.getUsername() + " " + user.getUsername());
+            System.out.println(user);
+            // System.out.println("user sign " + user.getUsername() + " " + user.getUsername());
             authService.saveUser(user);
             return ResponseEntity.ok("User saved successfully");
         } catch (UserException e) {
+            System.out.println("sadf");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -45,7 +49,9 @@ public class AuthController {
     public ResponseEntity<Object> verifyToken(@RequestHeader("Authorization") String tokenHeader) throws UserException {
         authService.validateAuthorizationHeader(tokenHeader);
         String jwt = authService.extractToken(tokenHeader);
+        System.out.println(jwt);
         ResponseDTO<UserDetails> res = authService.getUserInfo(jwt);
+        System.out.println(res);
         return ResponseEntity.ok(res);
     }
 

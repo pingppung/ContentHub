@@ -1,25 +1,25 @@
 package com.example.contenthub.entity;
 
-import jakarta.persistence.*;
-import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @Getter
-@Table(name = "site")
+@NoArgsConstructor
+@Entity
+@Table(name = "sites")
 public class Site {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "site_id")
-    private Long site_id;
+    private int id;
 
-    @JoinColumn(name = "name")
-    private String name;
+    @Column(name = "platform", nullable = false, unique = true)
+    private String platform;
 
-    @Column(name = "url")
-    private String url;
-
-    @OneToMany(mappedBy = "site")
-    private List<NovelSite> sites = new ArrayList<>();
+    @Column(name = "url_format", nullable = false)
+    private String urlFormat;
 }

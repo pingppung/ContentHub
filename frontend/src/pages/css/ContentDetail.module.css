@@ -1,0 +1,113 @@
+/* 전체 화면을 덮는 오버레이 */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);  /* 흐리게 처리 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 다른 콘텐츠 위에 오도록 설정 */
+}
+
+/* 모달 콘텐츠를 담는 wrapper */
+.modalContentWrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 900px;
+  padding: 20px;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 모달 헤더 */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.contentTitle {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* 닫기 버튼 */
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #888;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+/* 모달 본문 콘텐츠 */
+.modalContent {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.coverImg {
+  max-width: 300px;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.contentDetails {
+  flex: 1;
+}
+
+/* 장르, 설명 등 스타일 */
+.genre {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* 좋아요 버튼 */
+.likeSection {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.likeButton {
+  background-color: #ff4081;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.likeButton:hover {
+  background-color: #ff1e6d;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+.count {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 좋아요가 눌린 상태 */
+.liked {
+  background-color: #e91e63;
+}
