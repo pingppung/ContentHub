@@ -1,14 +1,11 @@
 package com.example.contenthub.controller;
 
-import com.example.contenthub.dto.ContentCrawlDTO;
 import com.example.contenthub.dto.ContentResponseDTO;
 import com.example.contenthub.service.crawling.CrawlerService;
 
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;

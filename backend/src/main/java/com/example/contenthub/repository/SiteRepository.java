@@ -7,5 +7,4 @@ import com.example.contenthub.entity.Site;
 public interface SiteRepository extends JpaRepository<Site, Integer> {
 
     Site findByPlatform(String platform);
-
 }
