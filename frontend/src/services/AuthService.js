@@ -25,7 +25,6 @@ class AuthService {
   //토큰 검증
   async verifyToken(token) {
     try {
-      console.log(token);
       const response = await axios.get("/auth/verifyToken", {
         headers: {
           "content-type": "application/json",

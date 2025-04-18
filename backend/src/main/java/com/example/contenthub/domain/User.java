@@ -1,4 +1,4 @@
-package com.example.contenthub.entity;
+package com.example.contenthub.domain;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;

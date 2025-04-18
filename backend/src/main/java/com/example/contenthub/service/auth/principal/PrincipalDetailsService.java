@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.contenthub.entity.User;
+import com.example.contenthub.domain.User;
 import com.example.contenthub.repository.UserRepository;
 
 //시큐리티 설정에서 loginProcessUrl에서 발동

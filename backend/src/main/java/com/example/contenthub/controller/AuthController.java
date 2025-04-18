@@ -1,7 +1,7 @@
 package com.example.contenthub.controller;
 
+import com.example.contenthub.domain.User;
 import com.example.contenthub.dto.ResponseDTO;
-import com.example.contenthub.entity.User;
 import com.example.contenthub.exception.UserException;
 import com.example.contenthub.service.auth.AuthService;
 

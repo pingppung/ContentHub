@@ -1,12 +1,12 @@
 package com.example.contenthub.service.crawling;
 
-import com.example.contenthub.entity.Content;
-import com.example.contenthub.entity.ContentSite;
-import com.example.contenthub.entity.Site;
 import com.example.contenthub.repository.ContentRepository;
 import com.example.contenthub.repository.SiteRepository;
 import com.example.contenthub.utils.ContentCrawlUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.example.contenthub.domain.Content;
+import com.example.contenthub.domain.SiteDetail;
+import com.example.contenthub.domain.Site;
 import com.example.contenthub.dto.ContentCrawlDTO;
 import com.example.contenthub.dto.ContentResponseDTO;
 import com.example.contenthub.dto.LinkDTO;
@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,21 +28,25 @@ import java.util.List;
 public class CrawlerService {
 
     private final ContentRepository contentRepository;
-    private final SiteRepository siteRepository; 
+    private final SiteRepository siteRepository;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
     public void crawl() throws IOException {
         String pythonUrl = "http://localhost:5000/crawl";
-
-        ResponseEntity<JsonNode> response = restTemplate.getForEntity(pythonUrl, JsonNode.class);
+        System.out.println(pythonUrl);
+        ResponseEntity<JsonNode> response = restTemplate.getForEntity(pythonUrl,
+                JsonNode.class);
         JsonNode body = response.getBody();
         String status = body.get("status").asText();
+        System.out.println(status);
         if (status.equals("success")) {
             Iterator<String> fieldNamesIterator = body.get("data").fieldNames();
             while (fieldNamesIterator.hasNext()) {
                 String platform = fieldNamesIterator.next();
                 JsonNode platformData = body.get("data").get(platform);
                 List<ContentCrawlDTO> contentList = ContentCrawlUtils.convertToDTOList(platformData);
+                System.out.println(contentList.toString());
                 saveContents(contentList, platform, "novel");
             }
         }
@@ -61,32 +66,19 @@ public class CrawlerService {
 
                 contentRepository.save(contentToSave);
             }
-            
-            if (!checkIfSiteExists(contentToSave, platform, content.getContentId())) {
-                saveContentSite(contentToSave, platform, content.getContentId(), content.isAdultContent());
-            }
+            saveContentSite(contentToSave, platform, content.getContentId(), content.isAdultContent());
+
         }
     }
 
     public void saveContentSite(Content content, String platform, String contentID, boolean isAdultContent) {
-        Site site = siteRepository.findByPlatform(platform);
-            content.addContentSite(contentID, isAdultContent, site);
-            contentRepository.save(content);
-        
+        SiteDetail newSite = new SiteDetail(platform, contentID, isAdultContent);
+        content.addSite(newSite);
+        contentRepository.save(content);
     }
 
     public Content checkContentExists(String category, String title) {
         return contentRepository.findByTitleAndCategory(title, category);
-    }
-    
-    private boolean checkIfSiteExists(Content content, String platform, String contentID) {
-        Site site = siteRepository.findByPlatform(platform); 
-        if (site != null) {
-            return content.getSites().stream()
-                    .anyMatch(contentSite -> contentSite.getSite().getId() == site.getId()
-                            && contentSite.getContentID().equals(contentID));
-        }
-        return false;
     }
 
     public List<ContentResponseDTO> getContentsFilter(String genre, String title, String category) {
@@ -112,7 +104,8 @@ public class CrawlerService {
     }
 
     // 제목 + 장르 + 카테고리 필터링
-    private List<ContentResponseDTO> getContentsByCategoryAndGenreAndTitle(String title, String genre, String category) {
+    private List<ContentResponseDTO> getContentsByCategoryAndGenreAndTitle(String title, String genre,
+            String category) {
         List<Content> list = contentRepository.findByCategoryAndGenreAndTitleContaining(title, genre, category);
         return getContentDTOList(list);
     }
@@ -132,11 +125,12 @@ public class CrawlerService {
                     n.getDescription(),
                     n.getCoverImg(),
                     n.getGenre());
-            for (ContentSite site : n.getSites()) {
-                String url = site.getSite().getUrlFormat() + site.getContentID();
-                LinkDTO linkDTO = new LinkDTO(site.getSite().getPlatform(), url, site.isAdult());
+            for (SiteDetail site : n.getSites()) {
+                String format = siteRepository.findByPlatform(site.getPlatform()).getUrlFormat();
+                String url = format + site.getContentID();
+                LinkDTO linkDTO = new LinkDTO(site.getPlatform(), url, site.isAdult());
                 content.getLinks().add(linkDTO);
-            } 
+            }
             contents.add(content);
         }
         return contents;

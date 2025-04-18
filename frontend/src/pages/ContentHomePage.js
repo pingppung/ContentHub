@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams , useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import Content from "../components/Content";
 import GenreButtons from "../components/GenreButtons";
 import Search from "../components/Search";
 import { getContentData, getContentBySearch } from "../services/ContentAPIService";
-import styles from "./css/NovelHome.module.css";
+import styles from "./css/ContentHome.module.css";
 import Header from "../components/Header";
 
 function ContentHome() {
@@ -21,7 +21,7 @@ function ContentHome() {
   useEffect(() => {
     const category = params.category;
     //const apiUrl = selectedGenre !== "전체" ? `/novel?genre=${selectedGenre}` : "/novel";
-    
+
     const encodedTitle = encodeURIComponent(searchInput);
     getContentBySearch(category, selectedGenre, searchInput).then((res) => {
       setDate(res);
@@ -36,7 +36,7 @@ function ContentHome() {
     const query = new URLSearchParams({
       title: content.title,
     }).toString();
-    navigate(`/content/${category}/detail/${query}`, { state: { background: location, content } });
+    navigate(`/content/${category}/detail/${query}`, { state: { background: location, content, category } });
 
   };
 

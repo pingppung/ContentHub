@@ -1,4 +1,4 @@
-package com.example.contenthub.entity;
+package com.example.contenthub.domain;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -15,9 +15,5 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "content_id", nullable = false)
-    private Content content;
 
 }

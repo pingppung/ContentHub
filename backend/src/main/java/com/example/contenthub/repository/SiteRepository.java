@@ -2,7 +2,7 @@ package com.example.contenthub.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.contenthub.entity.Site;
+import com.example.contenthub.domain.Site;
 
 public interface SiteRepository extends JpaRepository<Site, Integer> {
 

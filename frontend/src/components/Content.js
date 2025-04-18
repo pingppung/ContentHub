@@ -20,13 +20,4 @@ function Content({ title, coverImg, summary, genre, adultContent, openNovelDetai
   );
 }
 
-// Content.propTypes = {
-//   title: PropTypes.string.isRequired,
-//   coverImg: PropTypes.string.isRequired,
-//   summary: PropTypes.string.isRequired,
-//   genre: PropTypes.string.isRequired,
-//   adultContent: PropTypes.bool.isRequired,
-//   openNovelDetail: PropTypes.func.isRequired,
-// };
-
 export default Content;

@@ -1,0 +1,37 @@
+.reviewInput {
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.25rem;
+    border: 0.0625rem solid #e7e7e7;
+}
+
+.textArea {
+    border: none;
+    outline: none;
+    padding: 1rem 1rem 0.5625rem;
+    caret-color: rgb(129, 107, 255);
+    resize: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.875rem;
+    /* color: var(--foreground-1);
+    height: calc(7rem); */
+}
+
+.commentBtn {
+    align-self: end;
+}
+
+.reviewHeader {
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.reviews ul {
+    display: flex;
+    flex-direction: column;
+}

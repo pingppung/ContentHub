@@ -32,7 +32,8 @@ dependencies {
     implementation 'org.springframework.security:spring-security-web'
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    
     implementation 'org.seleniumhq.selenium:selenium-java:4.26.0'
     implementation 'io.github.bonigarcia:webdrivermanager:5.5.3' // 최신 버전
 
@@ -50,10 +51,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
     testImplementation 'org.mockito:mockito-core:4.0.0'
     implementation 'org.springframework.kafka:spring-kafka:3.1.1'
-
-
-//    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-
     runtimeOnly 'com.mysql:mysql-connector-j'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     

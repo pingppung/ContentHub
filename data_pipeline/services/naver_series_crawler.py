@@ -10,6 +10,7 @@ import re
 from services.naver_login import activate_bot
 from enums.naver_novel_xpath import NaverNovelXPath
 
+
 class NaverSeriesCrawler:
     def __init__(self, driver: webdriver.Chrome):
         self.driver = driver
@@ -35,7 +36,11 @@ class NaverSeriesCrawler:
     def get_last_page_number(self):
         try:
             wait = WebDriverWait(self.driver, 10)
-            pagination = wait.until(EC.presence_of_element_located((By.XPATH, NaverNovelXPath.PAGE_COUNT.value)))
+            pagination = wait.until(
+                EC.presence_of_element_located(
+                    (By.XPATH, NaverNovelXPath.PAGE_COUNT.value)
+                )
+            )
             page_links = pagination.find_elements(By.TAG_NAME, "a")
             total_pages = len(page_links)
             return total_pages
@@ -59,7 +64,9 @@ class NaverSeriesCrawler:
             wait = WebDriverWait(self.driver, 5)
 
             elements = wait.until(
-                lambda driver: driver.find_elements(By.XPATH, NaverNovelXPath.LIST.value)
+                lambda driver: driver.find_elements(
+                    By.XPATH, NaverNovelXPath.LIST.value
+                )
             )
 
             for el in elements:
@@ -76,11 +83,15 @@ class NaverSeriesCrawler:
         self.navigate_to_page(url)
 
         # 상세 정보 추출
-        original_title = self.driver.find_element(By.XPATH, NaverNovelXPath.TITLE.value).text
+        original_title = self.driver.find_element(
+            By.XPATH, NaverNovelXPath.TITLE.value
+        ).text
         title = self.extract_title(original_title)  # 실제 제목 -[] 제외
         is_adult_content = self.contains_adult_tag()  # 성인 여부 체크
         description = self.get_description()
-        cover_img = self.driver.find_element(By.XPATH, NaverNovelXPath.COVER_IMG.value).get_attribute("src")
+        cover_img = self.driver.find_element(
+            By.XPATH, NaverNovelXPath.COVER_IMG.value
+        ).get_attribute("src")
         genre = self.driver.find_element(By.XPATH, NaverNovelXPath.GENRE.value).text
         return {
             "title": title,
@@ -92,7 +103,9 @@ class NaverSeriesCrawler:
         }
 
     def contains_adult_tag(self):
-        return len(self.driver.find_elements(By.XPATH, NaverNovelXPath.IS_ADULT.value)) > 0
+        return (
+            len(self.driver.find_elements(By.XPATH, NaverNovelXPath.IS_ADULT.value)) > 0
+        )
 
     def extract_title(self, title):
         return re.sub(r"\[.*?\]", "", title).strip()
@@ -107,17 +120,30 @@ class NaverSeriesCrawler:
 
     def get_description(self):
         try:
-            element = self.driver.find_element(By.XPATH, NaverNovelXPath.DESCRIPTION_WITH_MORE.value)
-            description = self.driver.execute_script("return arguments[0].innerText.trim();", element)
+            element = self.driver.find_element(
+                By.XPATH, NaverNovelXPath.DESCRIPTION_WITH_MORE.value
+            )
+            description = self.driver.execute_script(
+                "return arguments[0].innerText.trim();", element
+            )
             return self.clean_text(description)
         except Exception:
             try:
-                description = self.driver.find_element(By.XPATH, NaverNovelXPath.DESCRIPTION_NO_MORE.value).text
+                description = self.driver.find_element(
+                    By.XPATH, NaverNovelXPath.DESCRIPTION_NO_MORE.value
+                ).text
                 return self.clean_text(description)
             except Exception:
                 return "설명 없음"
 
     def clean_text(self, text):
         # 불필요한 특수문자 및 "접기" 텍스트를 제거
-        return text.replace("\u00A0", " ").replace("\u200B", " ").replace("\u200C", " ")\
-            .replace("\u200D", " ").replace("\uFEFF", " ").replace("접기", "").strip()
+        return (
+            text.replace("\u00a0", " ")
+            .replace("\u200b", " ")
+            .replace("\u200c", " ")
+            .replace("\u200d", " ")
+            .replace("\ufeff", " ")
+            .replace("접기", "")
+            .strip()
+        )

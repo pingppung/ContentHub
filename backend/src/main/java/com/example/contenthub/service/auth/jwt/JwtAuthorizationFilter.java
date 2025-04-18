@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.contenthub.service.auth.principal.PrincipalDetails;
-import com.example.contenthub.entity.User;
+import com.example.contenthub.domain.User;
 import com.example.contenthub.exception.UserException;
 import com.example.contenthub.repository.UserRepository;
 import com.example.contenthub.utils.TokenProvider;

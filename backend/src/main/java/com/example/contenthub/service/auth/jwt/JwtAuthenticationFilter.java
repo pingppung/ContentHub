@@ -8,8 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.example.contenthub.domain.User;
 import com.example.contenthub.service.auth.principal.PrincipalDetails;
-import com.example.contenthub.entity.User;
 import com.example.contenthub.utils.TokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

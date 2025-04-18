@@ -3,7 +3,7 @@ import axios from "axios";
 class UserActivityService {
 
     //detail 페이지에서 나갈 때 한번만 보내기 -> 잘못누를경우 api 호출 자제하기 위함
-    async addLike(contentId, category) { 
+    async addLike(contentId, category) {
         try {
             const response = await axios.post('/like', {
                 contentId,
@@ -23,15 +23,23 @@ class UserActivityService {
             throw error;
         }
     }
-    async checkLikeStatus(contentId, category) {
+    async getLikeStatus(title, category, token) {
         try {
-            const response = await axios.get(`/like/status`, { params: { contentId, category } });
+            const response = await axios.get(`/user/activity/like/status`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                params: { title, category }
+            });
+            console.log(response);
             return response.data; // { liked: true/false }
         } catch (error) {
             console.error('Error checking like status:', error);
             throw error;
         }
     };
+
 }
 
 export default new UserActivityService();

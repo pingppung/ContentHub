@@ -1,0 +1,27 @@
+.rating {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.label {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #333;
+    /* 어두운 회색으로 가독성 UP */
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    /* 아이콘 사이 간격 */
+    font-size: 28px;
+    /* 아이콘 크기 */
+    cursor: pointer;
+}

@@ -15,10 +15,10 @@ def crawl():
 
         results = {"네이버시리즈": [], "카카오페이지": []}
 
-        # naver_crawler = NaverSeriesCrawler(driver)
-        # naver_data = naver_crawler.crawl()
-        # results["네이버시리즈"] = naver_data
-
+        naver_crawler = NaverSeriesCrawler(driver)
+        naver_data = naver_crawler.crawl()
+        results["네이버시리즈"] = naver_data
+        
         kakao_crawler = KakaoPageCrawler(driver)
         kakao_data = kakao_crawler.crawl()
         results["카카오페이지"] = kakao_data

@@ -1,4 +1,4 @@
-package com.example.contenthub.entity;
+package com.example.contenthub.domain;
 
 import java.util.ArrayList;
 import java.util.List;
