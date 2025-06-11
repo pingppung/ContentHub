@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 public class SiteDetail {
     private String platform;
-    private String contentID;
+    private String cid;
     private boolean isAdult;
 }

@@ -11,6 +11,10 @@
 !backend/src/test/**/bin/
 application.properties
 
+#데이터 수집
+/data_collector/api_collector/configs
+/data_collector/crawl_collector/xpaths
+
 db_data/
 
 # 루트

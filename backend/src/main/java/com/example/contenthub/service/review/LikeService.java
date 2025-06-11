@@ -8,7 +8,6 @@ import com.example.contenthub.domain.Content;
 import com.example.contenthub.domain.Like;
 import com.example.contenthub.domain.User;
 import com.example.contenthub.repository.ContentRepository;
-import com.example.contenthub.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,47 +20,48 @@ public class LikeService {
     private final LikeRepository likeRepository;
     private final ContentRepository contentRepository;
 
-    // public void addLike(User user, Long contentId, Like.Category category) {
-    //     boolean isValid = false;
+    public void addLike(User user, String title, String category) {
+        String userId = user.getUserId();
+        Like like = likeRepository.findByUserId(userId);
+        Content content = contentRepository.findByCategoryAndTitle(category, title);
+        if (like == null) {
+            // 없으면 새로 만들고 content 추가
+            System.out.println("추가");
+            like = new Like(userId, content.getId());
+        } else {
+            // 있으면 content 추가 (중복 방지 포함)
+            like.addContent(content.getId());
+        }
+        likeRepository.save(like);
+    }
 
-    //     switch (category) {
-    //         case NOVEL:
-    //             isValid = novelRepository.existsById(contentId);
-    //             break;
-    //         // case WEBTOON:
-    //         //     isValid = webtoonRepository.existsById(contentId);
-    //         //     break;
-    //         // case DRAMA:
-    //         //     isValid = dramaRepository.existsById(contentId);
-    //         //     break;
-    //     }
+    public void removeLike(User user, String title, String category) {
+        Content content = contentRepository.findByCategoryAndTitle(category, title);
 
-    //     if (!isValid) {
-    //         throw new IllegalArgumentException("contentId 또는 category가 이상합니다다");
-    //     }
+        // 해당 유저와 콘텐츠로 저장된 like 찾아오기
+        Like like = likeRepository.findByUserIdAndContentIds(user.getUserId(), content.getId());
 
-    //     Like like = new Like(user, contentId, category);
-    //     likeRepository.save(like);
-    // }
-    // public boolean checkLikeStatus(User user, String title, String category) {
-    //     try {
-    //         System.out.println(user + " " + title + " " + category);
-    //         Content content = contentRepository.findByTitleAndCategory(title, category);
+        if (like != null) {
+            likeRepository.delete(like);
+        }
+    }
 
-    //         if (content == null) {
-    //             System.out.println("Content not found!");
-    //             return false;
-    //         }
+    public boolean getUserLikeStatus(User user, String title, String category) {
+        try {
+            System.out.println(user + " " + title + " " + category);
+            Content content = contentRepository.findByCategoryAndTitle(category, title);
 
-    //         System.out.println(content);
-    //         boolean exists = likeRepository.existsByUserAndContent(user, content);
-    //         System.out.println("Like exists: " + exists);
-    //         return exists;
-    //     } catch (Exception e) {
-    //         System.err.println("Error in fefe: " + e.getMessage());
-    //         e.printStackTrace(); // 예외 스택 트레이스를 출력하여 문제를 추적
-    //         return false;
-    //     }
-    // }
+            if (content == null) {
+                System.out.println("Content not found!");
+                return false;
+            }
+            boolean likeExists = likeRepository.existsByUserIdAndContentIds(user.getUserId(), content.getId());
+            System.out.println("Like exists: " + likeExists);
+            return likeExists;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

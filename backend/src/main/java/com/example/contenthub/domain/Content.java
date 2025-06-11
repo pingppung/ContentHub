@@ -40,7 +40,7 @@ public class Content {
 
     public void addSite(SiteDetail newSite) {
         boolean exists = sites.stream().anyMatch(site -> site.getPlatform().equals(newSite.getPlatform()) &&
-                site.getContentID().equals(newSite.getContentID()));
+                site.getCid().equals(newSite.getCid()));
         if (!exists) {
             sites.add(newSite);
         }

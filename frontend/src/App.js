@@ -7,7 +7,7 @@ import MyPage from "./pages/MyPage";
 import AuthPage from "./pages/AuthPage";
 import AdminLayout from "./pages/AdminPage";
 import PrivateRoute from "./routes/PrivateRoute";
-
+import './App.css';
 
 
 function App() {

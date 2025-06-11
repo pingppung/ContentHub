@@ -1,73 +1,157 @@
 .header_container {
-  display: flex;
   width: 100%;
-  justify-content: center; /* 수평 가운데 정렬 */
-  align-items: center; /* 수직 가운데 정렬 */
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .headerInner {
-    width: 100%;
-    height: 96px;
-    padding: 0px 40px;
-    z-index: 100;
-    background-color: rgb(255, 255, 255);
-    box-sizing: border-box;
-    padding-left: 1.875rem;
-    padding-right: 1.875rem;
-    display: flex;
-    align-items: center;
-    /* justify-content: space-between; */
+  min-width: 800px;
+  margin: 0 auto;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
 
-img {
-  width: 150px;
+.headerInner img {
+  height: 40px;
   object-fit: contain;
 }
 
-ul {
+nav ul {
   display: flex;
   flex-flow: row;
   align-items: center;
   gap: 20px;
-  height: 100%;
-  padding: 0 50px;
+  list-style: none;
   margin: 0;
+  padding: 0;
 }
-
 li {
   list-style-type: none;
+  padding: 0;
 }
-
-li a {
+li a{
   font-size: 15px;
   font-weight: 600;
   color: black;
   text-decoration: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
+
+nav ul li:hover {
+  color: #228be6;
+}
+
 li a:hover,
 li.select a {
   color: #8f8ff7;
 }
 
-button {
-  border: none;
+nav ul li.select {
+  color: #228be6;
+}
+
+.searchContainer {
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchContainer form {
+  display: flex;
+  gap: 8px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #495057;
+  background-color: #f8f9fa;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #228be6;
   background-color: white;
+  box-shadow: 0 0 0 3px rgba(34, 139, 230, 0.1);
+}
+
+.searchButton {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #228be6;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
+
+.searchButton:hover {
+  background-color: #1c7ed6;
+}
+
+.login, .logout {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login {
+  background-color: #228be6;
+  color: white;
+}
+
+.login:hover {
+  background-color: #1c7ed6;
+}
+
+.logout {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #e9ecef;
+}
+
+.logout:hover {
+  background-color: #e9ecef;
+}
+
 .userName {
-  padding: 0 20px;
-  font-weight: 300;
+  font-size: 14px;
+  color: #495057;
+  margin-right: 10px;
 }
-.chatIcon {
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    margin-left: 16px;
+
+@media (max-width: 1200px) {
+  .headerInner {
+    padding: 12px 15px;
+  }
+  
+  .searchContainer {
+    max-width: 300px;
+  }
 }
-.chatWrapper {
-  position: fixed; /* 화면 고정 */
-  top: 20px; /* 상단 여백 */
-  right: 20px; /* 우측 여백 */
-  z-index: 1000; /* 다른 요소보다 위에 표시 */
+
+@media (max-width: 800px) {
+  .headerInner {
+    min-width: 800px;
+    overflow-x: auto;
+  }
+  
+  .searchContainer {
+    max-width: 250px;
+  }
 }

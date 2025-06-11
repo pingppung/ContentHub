@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AuthService from "../services/AuthService";
-import LoginForm from "../components/LoginForm";
-import SignupForm from "../components/SignUpForm";
+import LoginForm from "../components/auth/LoginForm";
+import SignupForm from "../components/auth/SignUpForm";
 
 function AuthPage() {
-  
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { authType } = useParams();
   const navigate = useNavigate();
@@ -15,12 +15,12 @@ function AuthPage() {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
-     }
+    }
   }, []);
-  
+
   const handleLoginSuccess = (user) => {
     navigate("/", {
-      state: { isLoggedIn : true} 
+      state: { isLoggedIn: true }
     });
   };
 
@@ -31,14 +31,14 @@ function AuthPage() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("/"); 
+      navigate("/");
     }
   }, [isLoggedIn, navigate]);
 
   return (
     <div>
-      {authType === "login" && <LoginForm onAuthSuccess={handleLoginSuccess } />}
-      {authType === "signup" && <SignupForm onAuthSuccess={handleSignupSuccess}/>}
+      {authType === "login" && <LoginForm onAuthSuccess={handleLoginSuccess} />}
+      {authType === "signup" && <SignupForm onAuthSuccess={handleSignupSuccess} />}
     </div>
   );
 }

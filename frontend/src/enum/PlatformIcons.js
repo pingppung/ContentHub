@@ -8,4 +8,5 @@ export const platformIcons = {
   티빙: "https://your-icon-url.com/tving-icon.png",
   웨이브: "https://your-icon-url.com/wavve-icon.png",
   기타: "https://your-icon-url.com/default-icon.png",
+  청불: "https://i.namu.wiki/i/CLhQiPZyOB0c50kkVKBKrlpEL3SwrhgQGNe7NNVtiatq49QxoHx68cASxEfQAgtSuMo_-7pcNtetfr0RV68xgQ.svg"
 };

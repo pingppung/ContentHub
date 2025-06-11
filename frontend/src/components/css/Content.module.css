@@ -1,0 +1,70 @@
+.novel {
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.img__container {
+  width: 100%;
+  aspect-ratio: 2/3;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #f8f9fa;
+}
+
+.novel__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.novel:hover .novel__img {
+  transform: scale(1.03);
+}
+
+.novel__title {
+  font-size: 14px;
+  color: #495057;
+  font-weight: 500;
+  line-height: 1.5;
+  /* margin: 12px 0 0; */
+  padding: 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 42px;
+  text-align: center;
+}
+
+.icon__19 {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+  opacity: 0.8;
+}
+
+@media (max-width: 1200px) {
+  .novel__title {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 800px) {
+  .novel__title {
+    font-size: 12px;
+    height: 36px;
+    margin-top: 8px;
+  }
+  
+  .icon__19 {
+    width: 14px;
+    height: 14px;
+  }
+}
