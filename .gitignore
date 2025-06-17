@@ -14,6 +14,7 @@ application.properties
 #데이터 수집
 /data_collector/api_collector/configs
 /data_collector/crawl_collector/xpaths
+/data_collector/enums/platform.py
 
 db_data/
 

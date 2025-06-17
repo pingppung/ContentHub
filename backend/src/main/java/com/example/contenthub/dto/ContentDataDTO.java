@@ -1,6 +1,5 @@
 package com.example.contenthub.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -10,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContentCrawlDTO {
-    private String title; 
-    private String description;    
-    private String coverImg;   
-    private String genre;
-    private boolean isAdultContent;       
+public class ContentDataDTO {
+    private String title;
+    private String synopsis;
+    private String coverImg;
+    private List<String> genre;
+    private String ageRating;
     private String contentId;
 }

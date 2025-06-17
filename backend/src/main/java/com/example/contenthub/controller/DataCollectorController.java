@@ -11,13 +11,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 class DataCollectorController {
-    private final ContentService crawlerService;
+    private final ContentService contentService;
     private final DataCollectorService dataCollectorService;
 
     @GetMapping("/contents/search")
@@ -26,7 +25,7 @@ class DataCollectorController {
             @RequestParam(value = "genre") String genre,
             @RequestParam(value = "title", required = false) String title) {
         System.out.println(category + " " + genre + " " + title);
-        return crawlerService.filterContents(genre, title, category);
+        return contentService.filterContents(genre, title, category);
     }
 
     // 기존 @Scheduled 메서드

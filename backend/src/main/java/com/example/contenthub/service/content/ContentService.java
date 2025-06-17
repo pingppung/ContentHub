@@ -5,7 +5,7 @@ import com.example.contenthub.repository.SiteRepository;
 import com.example.contenthub.domain.SiteDetail;
 import com.example.contenthub.domain.Content;
 import com.example.contenthub.domain.Site;
-import com.example.contenthub.dto.ContentCrawlDTO;
+import com.example.contenthub.dto.ContentDataDTO;
 import com.example.contenthub.dto.ContentResponseDTO;
 import com.example.contenthub.dto.LinkDTO;
 import jakarta.transaction.Transactional;
@@ -25,28 +25,29 @@ public class ContentService {
     private final SiteRepository siteRepository;
 
     @Transactional
-    public void saveContents(List<ContentCrawlDTO> contents, String platform, String category) {
-        for (ContentCrawlDTO content : contents) {
+    public void saveContents(List<ContentDataDTO> contents, String platform, String category) {
+        for (ContentDataDTO content : contents) {
             Content contentToSave = findExistingContent(category, content.getTitle());
             if (contentToSave == null) {
                 contentToSave = new Content(
                         content.getTitle(),
-                        content.getDescription(),
+                        content.getSynopsis(),
                         content.getGenre(),
                         content.getCoverImg(),
                         category);
 
                 contentRepository.save(contentToSave);
             }
-            saveContentSite(contentToSave, platform, content.getContentId(), content.isAdultContent());
+            saveContentSite(contentToSave, platform, content.getContentId(), content.getAgeRating());
 
         }
     }
 
     public void saveContentSite(Content content, String platform,
-            String contentID, boolean isAdultContent) {
-        SiteDetail newSite = new SiteDetail(platform, contentID, isAdultContent);
+            String contentID, String ageRating) {
+        SiteDetail newSite = new SiteDetail(platform, contentID, ageRating);
         content.addSite(newSite);
+        contentRepository.save(content);
     }
 
     public Content findExistingContent(String category, String title) {
@@ -94,16 +95,16 @@ public class ContentService {
         for (Content n : list) {
             ContentResponseDTO content = new ContentResponseDTO(
                     n.getTitle(),
-                    n.getDescription(),
+                    n.getSynopsis(),
                     n.getCoverImg(),
                     n.getGenre());
             for (SiteDetail site : n.getSites()) {
-                Site platformSite = siteRepository.findByPlatform(site.getPlatform());
+                Site platformSite = siteRepository.findByPlatformAndCategory(site.getPlatform(), n.getCategory());
                 if (platformSite == null) {
                     throw new IllegalArgumentException("Invalid platform: " + site.getPlatform());
                 }
                 String url = platformSite.getUrlFormat() + site.getCid();
-                LinkDTO linkDTO = new LinkDTO(site.getPlatform(), url, site.isAdult());
+                LinkDTO linkDTO = new LinkDTO(site.getPlatform(), url, site.getAge_rating());
                 content.getLinks().add(linkDTO);
             }
             contents.add(content);

@@ -41,8 +41,11 @@ function ContentDetail() {
 	};
 
 	const getAgeAdultIcon = (ageAdult) => {
-		const ageIcon = platformIcons['청불'];
-		return ageAdult ? <img src={ageIcon} style={{ width: '15px', height: '15px' }} /> : null;
+		let ageIcon = null;
+		if (ageAdult >= 18) ageIcon = platformIcons['청불'];
+		else if (ageAdult == 12) ageIcon = platformIcons['이용12'];
+		else if (ageAdult == 15) ageIcon = platformIcons['이용15'];
+		return <img src={ageIcon} style={{ width: '15px', height: '15px' }} />;
 	};
 
 	const handleLikeToggle = async () => {
@@ -129,7 +132,11 @@ function ContentDetail() {
 						<div className={styles.infoItem}>
 							<span className={styles.label}>태그</span>
 							<span className={styles.spacing} />
-							<span className={styles.value}>#{content.genre}</span>
+							<span className={styles.value}>
+								{content.genre.map((g, i) => (
+									<span key={i}>#{g} </span>
+								))}
+							</span>
 						</div>
 
 						{/* 회차 */}
@@ -152,7 +159,7 @@ function ContentDetail() {
 									>
 										{getPlatformIconImage(item.platform)}
 										{item.platform}
-										{getAgeAdultIcon(item.adult)}
+										{getAgeAdultIcon(item.age_rating)}
 									</div>
 								))}
 							</div>

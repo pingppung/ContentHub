@@ -1,10 +1,9 @@
 package com.example.contenthub.service.content;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.contenthub.dto.ContentCrawlDTO;
-import com.example.contenthub.utils.ContentCrawlUtils;
+import com.example.contenthub.dto.ContentDataDTO;
+import com.example.contenthub.utils.ContentDataUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ public class DataCollectorService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ContentService contentService;
-    // private final ApiContentService apiContentService;
 
     public void collectData(String platform, String category) throws IOException {
         System.out.println("데이터 수집 시작해용~");
@@ -51,8 +49,10 @@ public class DataCollectorService {
 
         JsonNode responseBody = response.getBody();
         System.out.println("수집 결과: " + responseBody);
+        JsonNode data = responseBody.get("data");
+        List<ContentDataDTO> contentList = ContentDataUtils.convertToDTOList(data);
+        contentService.saveContents(contentList, platform, category);
 
-        System.out.println("데이터 수집 끝났어용~");
     }
 
 }

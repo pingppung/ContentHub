@@ -20,8 +20,8 @@ public class Content {
     private String id;
 
     private String title;
-    private String description;
-    private String genre;
+    private String synopsis;
+    private List<String> genre;
 
     @Field("cover_image")
     private String coverImg;
@@ -30,9 +30,14 @@ public class Content {
 
     private List<SiteDetail> sites = new ArrayList<>();
 
-    public Content(String title, String description, String genre, String coverImg, String category) {
+    // --- 타입별로 optional --- 영화, 드라마
+    // private String country;
+    // private List<String> actors;
+    // private String releaseDate;
+
+    public Content(String title, String synopsis, List<String> genre, String coverImg, String category) {
         this.title = title;
-        this.description = description;
+        this.synopsis = synopsis;
         this.genre = genre;
         this.coverImg = coverImg;
         this.category = category;

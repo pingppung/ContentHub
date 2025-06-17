@@ -149,6 +149,9 @@
   padding: 0;
 }
 
+.value span {
+  padding-right: 10px;
+}
 .platforms {
   display: flex;
   flex-direction: column;

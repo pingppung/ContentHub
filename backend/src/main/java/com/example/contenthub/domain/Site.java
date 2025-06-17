@@ -1,8 +1,5 @@
 package com.example.contenthub.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +14,11 @@ public class Site {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "platform", nullable = false, unique = true)
+    @Column(name = "platform", nullable = false)
     private String platform;
+
+    @Column(name = "category", nullable = false)
+    private String category;
 
     @Column(name = "url_format", nullable = false)
     private String urlFormat;

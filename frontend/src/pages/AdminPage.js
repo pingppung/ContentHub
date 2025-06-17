@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TfiMenu } from "react-icons/tfi";
 import ContentCollector from '../components/admin/ContentCollector';
 import logo from '../images/logo.PNG'
-import './AdminPage.css'
+import './css/AdminPage.css'
 import { MenuOutlined } from '@ant-design/icons';
 
 function AdminLayout() {

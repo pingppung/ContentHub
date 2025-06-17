@@ -50,6 +50,10 @@ class UserActivityService {
         }
     };
 
+    async fetchSaveStatus(){
+        
+    }
+
 }
 
 export default new UserActivityService();

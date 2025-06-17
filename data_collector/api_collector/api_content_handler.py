@@ -65,16 +65,56 @@ def extract_cid_list(data: dict, content_conf: dict) -> list:
     return content_ids
 
 
-def build_detail_url(content_id: str, content_conf: dict) -> str:
-    detail_url = content_conf["detail_url"]
-    return detail_url.format(cid=content_id)
+def build_endpoint_url(content_id: str, content_conf: dict) -> str:
+    endpoint_url = content_conf["endpoint_url"]
+    return endpoint_url.format(cid=content_id)
 
 
-def fetch_metadata(url):
+def get_by_path(data, path):
+    keys = path.split(".")
+    for key in keys:
+        if isinstance(data, list):
+            data = [d.get(key) for d in data]
+        else:
+            data = data.get(key, {})
+    return data
+
+
+def extract_field(data, path):
+    if "[]" in path:
+        pre_path, last_key = path.split("[]")
+        items = get_by_path(data, pre_path.rstrip("."))
+        return [item.get(last_key.strip(".")) for item in items or [] if item]
+    elif "image" in path:
+        img = get_by_path(data, path)
+        if img and not img.startswith("http"):
+            return "https://" + img
+        return img
+    elif path == "releaseyear":
+        return get_status(data.get(path))
+    elif path == "releasedate":
+        return data.get("firstreleasedate") or data.get(path)
+    else:
+        return get_by_path(data, path)
+
+
+def get_status(release_year: str) -> str:
+    if "~" in release_year:
+        start, end = release_year.split("~")
+        return "종영" if end.strip() else "방영 중"
+    return "정보 없음"
+
+
+def fetch_metadata(url: str, content_conf: dict):
     try:
         response = requests.get(url)
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            result = {}
+            field_mapping = content_conf["field_mapping"]
+            for key, path in field_mapping.items():
+                result[key] = extract_field(data, path)
+            return result
         else:
             print(f"요청 실패: {url} - {response.status_code}")
             return None
@@ -84,6 +124,7 @@ def fetch_metadata(url):
 
 
 def collect_content(platform_name: str, content_type: str):
+    print(platform_name)
     config_module = load_config_module(platform_name)
     url = build_url(config_module, content_type)
     response = requests.get(url)
@@ -97,10 +138,8 @@ def collect_content(platform_name: str, content_type: str):
     content_conf = config_module.CONTENT_CONFIG[content_type]
 
     content_ids = extract_cid_list(data, content_conf)
-    print("추출된 CID:", content_ids)
 
-    detail_urls = [build_detail_url(cid, content_conf) for cid in content_ids]
-    print("detail URLs:", detail_urls)
+    endpoint_urls = [build_endpoint_url(cid, content_conf) for cid in content_ids]
 
-    results = [fetch_metadata(url) for url in detail_urls]
+    results = [fetch_metadata(url, content_conf) for url in endpoint_urls]
     return results

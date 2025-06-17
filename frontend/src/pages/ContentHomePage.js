@@ -89,6 +89,10 @@ function ContentHome() {
     return pageNumbers;
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className={styles.container}>
       <Header />
@@ -111,6 +115,7 @@ function ContentHome() {
           {/* 장르 섹션 */}
           <div className={styles.genreSection}>
             <GenreButtons
+              category={category}
               selectedGenre={selectedGenre}
               handleGenreClick={handleGenreClick}
             />
@@ -195,6 +200,26 @@ function ContentHome() {
               {/* 추천 콘텐츠 컴포넌트 추가 예정 */}
             </div>
           </section>
+
+          {/* 퀵메뉴 */}
+          <div className={styles.quickMenu}>
+            <a href="#popular" className={styles.quickMenuItem}>
+              <i className="fas fa-fire"></i>
+              <span>인기</span>
+            </a>
+            <a href="#latest" className={styles.quickMenuItem}>
+              <i className="fas fa-clock"></i>
+              <span>최신</span>
+            </a>
+            <a href="#recommended" className={styles.quickMenuItem}>
+              <i className="fas fa-star"></i>
+              <span>추천</span>
+            </a>
+            <button onClick={scrollToTop} className={styles.quickMenuItem}>
+              <i className="fas fa-arrow-up"></i>
+              <span>TOP</span>
+            </button>
+          </div>
 
           {/* 푸터 섹션 */}
           <footer className={styles.footer}>

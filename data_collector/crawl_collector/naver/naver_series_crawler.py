@@ -3,18 +3,18 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 import logging
 import re
 from .naver_login import activate_bot
-from ..xpaths.naver_novel_xpath import NaverNovelXPath
 
 
 class NaverSeriesCrawler:
-    def __init__(self, driver: webdriver.Chrome):
+
+    def __init__(self, driver: webdriver.Chrome, xpath_class):
         self.driver = driver
-        self.driver.get(NaverNovelXPath.URL.value)
+        self.xpath_class = xpath_class
+        self.driver.get(self.xpath_class.URL.value)
         # activate_bot(driver)
 
     def crawl(self):
@@ -22,15 +22,15 @@ class NaverSeriesCrawler:
         try:
             total_pages = self.get_last_page_number()
             novel_links = self.get_naver_series_data(total_pages)
-            # content = self.extract_novel_data(novel_links[0])
-            # novels.append(content)
-            for href in novel_links:
-                try:
-                    content = self.extract_novel_data(href)
-                    novels.append(content)
-                except Exception as e:
-                    logging.error(f"예상치 못한 오류 발생 - 다음 항목으로 진행: {href}")
-                    # logging.exception(e)
+            content = self.extract_novel_data(novel_links[1])
+            novels.append(content)
+            # for href in novel_links:
+            #     try:
+            #         content = self.extract_novel_data(href)
+            #         novels.append(content)
+            #     except Exception as e:
+            #         logging.error(f"예상치 못한 오류 발생 - 다음 항목으로 진행: {href}")
+            #         # logging.exception(e)
         except TimeoutException as e:
             raise Exception("TimeoutException 발생", e)
         return novels
@@ -40,7 +40,7 @@ class NaverSeriesCrawler:
             wait = WebDriverWait(self.driver, 10)
             pagination = wait.until(
                 EC.presence_of_element_located(
-                    (By.XPATH, NaverNovelXPath.PAGE_COUNT.value)
+                    (By.XPATH, self.xpath_class.PAGE_COUNT.value)
                 )
             )
             page_links = pagination.find_elements(By.TAG_NAME, "a")
@@ -60,14 +60,14 @@ class NaverSeriesCrawler:
         novel_links = []
         for i in range(1, total_pages + 1):
 
-            url = f"{NaverNovelXPath.URL.value}{i}"
+            url = f"{self.xpath_class.URL.value}{i}"
             self.navigate_to_page(url)
 
             wait = WebDriverWait(self.driver, 5)
 
             elements = wait.until(
                 lambda driver: driver.find_elements(
-                    By.XPATH, NaverNovelXPath.LIST.value
+                    By.XPATH, self.xpath_class.LIST.value
                 )
             )
 
@@ -79,34 +79,41 @@ class NaverSeriesCrawler:
 
     def extract_novel_data(self, detail_href: str) -> dict:
         content_id = self.extract_content_id(detail_href)
-        url = NaverNovelXPath.DETAIL_URL.build_url(content_id)
+        url = self.xpath_class.DETAIL_URL.build_url(content_id)
 
         # 상세 페이지로 이동
         self.navigate_to_page(url)
 
         # 상세 정보 추출
         original_title = self.driver.find_element(
-            By.XPATH, NaverNovelXPath.TITLE.value
+            By.XPATH, self.xpath_class.TITLE.value
         ).text
         title = self.extract_title(original_title)  # 실제 제목 -[] 제외
         is_adult_content = self.contains_adult_tag()  # 성인 여부 체크
-        description = self.get_description()
+        age_rating = 19 if is_adult_content else 12
+        synopsis = self.get_description()
         cover_img = self.driver.find_element(
-            By.XPATH, NaverNovelXPath.COVER_IMG.value
+            By.XPATH, self.xpath_class.COVER_IMG.value
         ).get_attribute("src")
-        genre = self.driver.find_element(By.XPATH, NaverNovelXPath.GENRE.value).text
+
+        genre_raw = self.driver.find_element(
+            By.XPATH, self.xpath_class.GENRE.value
+        ).text
+        genre = self.split_genre(genre_raw)
+
         return {
             "title": title,
-            "description": description,
+            "synopsis": synopsis,
             "cover_img": cover_img,
             "genre": genre,
-            "is_adult_content": is_adult_content,
+            "age_rating": age_rating,
             "content_id": content_id,
         }
 
     def contains_adult_tag(self):
         return (
-            len(self.driver.find_elements(By.XPATH, NaverNovelXPath.IS_ADULT.value)) > 0
+            len(self.driver.find_elements(By.XPATH, self.xpath_class.IS_ADULT.value))
+            > 0
         )
 
     def extract_title(self, title):
@@ -120,10 +127,16 @@ class NaverSeriesCrawler:
             print("해당 작품 id를 찾을 수가 없습니다!")
             return None
 
+    def split_genre(self, genre_raw: str) -> list[str]:
+        if not genre_raw:
+            return []
+        # 여러 구분자 대응: · , / | 공백 포함
+        return [g.strip() for g in re.split(r"[·/,|]", genre_raw) if g.strip()]
+
     def get_description(self):
         try:
             element = self.driver.find_element(
-                By.XPATH, NaverNovelXPath.DESCRIPTION_WITH_MORE.value
+                By.XPATH, self.xpath_class.DESCRIPTION_WITH_MORE.value
             )
             description = self.driver.execute_script(
                 "return arguments[0].innerText.trim();", element
@@ -132,7 +145,7 @@ class NaverSeriesCrawler:
         except Exception:
             try:
                 description = self.driver.find_element(
-                    By.XPATH, NaverNovelXPath.DESCRIPTION_NO_MORE.value
+                    By.XPATH, self.xpath_class.DESCRIPTION_NO_MORE.value
                 ).text
                 return self.clean_text(description)
             except Exception:

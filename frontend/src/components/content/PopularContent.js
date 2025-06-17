@@ -49,13 +49,13 @@ function PopularContent({ contents }) {
     if (!contents || contents.length === 0) {
         return null;
     }
-
+    console.log(contents);
     return (
         <div className={styles.popularContainer}>
             <div className={styles.carouselWrapper}>
                 {getVisibleContents().map((content, index) => (
                     <div
-                        key={content.id}
+                        key={index}
                         className={`${styles.carouselItem} ${index === 1 ? styles.active : ''}`}
                     >
                         <div className={styles.imageWrapper}>

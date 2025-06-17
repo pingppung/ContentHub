@@ -1,20 +1,62 @@
 .genreButtons {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 }
 
 .genreButtons button {
-  padding: 5px 22px;
-  width: auto;
-  height: 40px;
+  padding: 8px 16px;
+  min-width: 80px;
+  height: 36px;
   background: #FFFFFF;
-  /*border-radius: 50px;*/
-  border-style: none;
+  border: 1px solid #eee;
+  border-radius: 18px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.genreButtons button:hover {
+  background-color: #f5f5f5;
+  border-color: #ddd;
 }
 
 .genreButtons .active {
   background-color: #999DFD; /* 선택된 버튼의 배경색 */
   color: #FFFFFF; /* 선택된 버튼의 텍스트 색상 */
+  border-color: #999DFD;
+}
+
+@media (max-width: 768px) {
+  .genreButtons {
+    gap: 8px;
+  }
+
+  .genreButtons button {
+    padding: 6px 12px;
+    min-width: 70px;
+    height: 32px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .genreButtons {
+    gap: 6px;
+  }
+
+  .genreButtons button {
+    padding: 5px 10px;
+    min-width: 60px;
+    height: 28px;
+    font-size: 12px;
+  }
 }

@@ -16,6 +16,13 @@ function Content({ title, coverImg, summary, genre, adultContent, openNovelDetai
         {adultContent ? <img src="https://cdn.imweb.me/upload/57a3ee0cb33d0.png" className={styles.icon__19} /> : null}
         {title}
       </h2>
+      <div className={styles.genre__container}>
+        {genre.map((g, index) => (
+          <span key={index} className={styles.genre__tag}>
+            {g}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

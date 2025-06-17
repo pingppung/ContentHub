@@ -8,5 +8,5 @@ import lombok.Getter;
 public class SiteDetail {
     private String platform;
     private String cid;
-    private boolean isAdult;
+    private String age_rating;
 }

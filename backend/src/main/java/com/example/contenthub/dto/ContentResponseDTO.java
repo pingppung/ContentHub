@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContentResponseDTO {
-    private String title; 
-    private String description;    
-    private String coverImg;   
-    private String genre;      
+    private String title;
+    private String description;
+    private String coverImg;
+    private List<String> genre;
     private List<LinkDTO> links;
 
-    public ContentResponseDTO(String title, String description, String coverImg, String genre) {
+    public ContentResponseDTO(String title, String description, String coverImg, List<String> genre) {
         this.title = title;
         this.description = description;
         this.coverImg = coverImg;

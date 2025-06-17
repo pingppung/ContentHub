@@ -7,13 +7,15 @@ from time import sleep
 import logging
 import re
 from .kako_login import activate_bot
-from ..xpaths.kakao_novel_xpath import KakaoNovelXPath
+from ..xpaths.kakao_xpath import KakaoNovelXPath
 
 
 class KakaoPageCrawler:
-    def __init__(self, driver: webdriver.Chrome):
+
+    def __init__(self, driver: webdriver.Chrome, xpath_class):
         self.driver = driver
-        self.driver.get(KakaoNovelXPath.URL.value)
+        self.xpath_class = xpath_class
+        self.driver.get(self.xpath_class.URL.value)
         activate_bot(driver)
 
     def crawl(self):
@@ -48,7 +50,7 @@ class KakaoPageCrawler:
 
         wait = WebDriverWait(self.driver, 5)
         elements = wait.until(
-            EC.presence_of_all_elements_located((By.XPATH, KakaoNovelXPath.LIST.value))
+            EC.presence_of_all_elements_located((By.XPATH, self.xpath_class.LIST.value))
         )
 
         for el in elements:
@@ -65,30 +67,37 @@ class KakaoPageCrawler:
 
     def extract_novel_data(self, detail_href: str) -> dict:
         content_id = self.extract_content_id(detail_href)
-        url = KakaoNovelXPath.DETAIL_URL.build_url(content_id)
+        url = self.xpath_class.DETAIL_URL.build_url(content_id)
         # 상세 페이지로 이동
         self.navigate_to_page(url)
 
         # 상세 정보 추출
         original_title = self.driver.find_element(
-            By.XPATH, KakaoNovelXPath.TITLE.value
+            By.XPATH, self.xpath_class.TITLE.value
         ).text
+
         is_adult_content = self.contains_adult_tag(original_title)  # 성인 여부 체크
+        age_rating = 19 if is_adult_content else 12
+
         title = self.extract_title(original_title)  # 실제 제목 정리
-        description = self.driver.find_element(
-            By.XPATH, KakaoNovelXPath.DESCRIPTION.value
+        synopsis = self.driver.find_element(
+            By.XPATH, self.xpath_class.DESCRIPTION.value
         ).text
         cover_img = self.driver.find_element(
-            By.XPATH, KakaoNovelXPath.COVER_IMG.value
+            By.XPATH, self.xpath_class.COVER_IMG.value
         ).get_attribute("src")
-        genre = self.driver.find_element(By.XPATH, KakaoNovelXPath.GENRE.value).text
+
+        genre_raw = self.driver.find_element(
+            By.XPATH, self.xpath_class.GENRE.value
+        ).text
+        genre = self.split_genre(genre_raw)
 
         return {
             "title": title,
-            "description": description,
+            "synopsis": synopsis,
             "cover_img": cover_img,
             "genre": genre,
-            "is_adult_content": is_adult_content,
+            "age_rating": age_rating,
             "content_id": content_id,
         }
 
@@ -111,3 +120,9 @@ class KakaoPageCrawler:
         else:
             print("해당 작품 id를 찾을 수가 없습니다!")
             return None
+
+    def split_genre(genre_raw: str) -> list[str]:
+        if not genre_raw:
+            return []
+        # 여러 구분자 대응: · , / | 공백 포함
+        return [g.strip() for g in re.split(r"[·/,|]", genre_raw) if g.strip()]

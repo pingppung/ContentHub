@@ -12,7 +12,5 @@ import lombok.Setter;
 public class LinkDTO {
     private String platform;
     private String url;
-    private boolean isAdult;
+    private String age_rating;
 }
-
-
