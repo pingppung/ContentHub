@@ -33,7 +33,11 @@ def extract_cid_list(data: dict, content_conf: dict) -> list:
         return d if isinstance(d, list) else []
 
     def extract_content_id(item, extraction_rule):
-        source = item.get(extraction_rule["list_key"], {})
+        list_key = extraction_rule.get("list_key")
+        if list_key:  # list_key가 있으면 item에서 그 키로 값을 가져옴
+            source = item.get(list_key, {})
+        else:  # 없으면 item 자체가 source
+            source = item
 
         if isinstance(source, list):
             index = extraction_rule.get("index", 0)
@@ -94,6 +98,8 @@ def extract_field(data, path):
         return get_status(data.get(path))
     elif path == "releasedate":
         return data.get("firstreleasedate") or data.get(path)
+    elif "age" in path:
+        return clean_age_rating(data.get(path))
     else:
         return get_by_path(data, path)
 
@@ -103,6 +109,13 @@ def get_status(release_year: str) -> str:
         start, end = release_year.split("~")
         return "종영" if end.strip() else "방영 중"
     return "정보 없음"
+
+
+def clean_age_rating(raw_age: str) -> str:
+    if raw_age == "전체연령가":
+        return raw_age
+    match = re.search(r"\d+", raw_age)
+    return match.group() if match else raw_age
 
 
 def fetch_metadata(url: str, content_conf: dict):
@@ -124,7 +137,6 @@ def fetch_metadata(url: str, content_conf: dict):
 
 
 def collect_content(platform_name: str, content_type: str):
-    print(platform_name)
     config_module = load_config_module(platform_name)
     url = build_url(config_module, content_type)
     response = requests.get(url)
@@ -134,12 +146,9 @@ def collect_content(platform_name: str, content_type: str):
         return {"error": f"HTTP {response.status_code}"}
 
     data = response.json()
-
     content_conf = config_module.CONTENT_CONFIG[content_type]
 
     content_ids = extract_cid_list(data, content_conf)
-
     endpoint_urls = [build_endpoint_url(cid, content_conf) for cid in content_ids]
-
     results = [fetch_metadata(url, content_conf) for url in endpoint_urls]
     return results

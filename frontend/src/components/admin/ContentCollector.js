@@ -75,7 +75,7 @@ function ContentCollector() {
 
   return (
     <>
-      <div className={`dashboard-card full-width${isFullWidth ? 'full-width' : ''}`}>
+      <div className={`dashboard-card full-width`}>
         <h3>콘텐츠 통계</h3>
         <div className="stats-grid">
           <div className="stat-item">
@@ -143,7 +143,7 @@ function ContentCollector() {
           {/* 여기에 최근 콘텐츠 목록을 표시할 수 있습니다 */}
         </div>
       </div>
-      <div className={`dashboard-card full-width ${isFullWidth ? 'full-width' : ''}`}>
+      <div className={`dashboard-card full-width`}>
         <div className="content-collector">
           <h2>콘텐츠 수집</h2>
           <div className="collector-grid">

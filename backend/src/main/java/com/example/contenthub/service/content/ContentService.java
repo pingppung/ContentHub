@@ -36,6 +36,15 @@ public class ContentService {
                         content.getCoverImg(),
                         category);
 
+                if (category.equalsIgnoreCase("movie")) {
+                    contentToSave.setActors(content.getActors());
+                    contentToSave.setCountry(content.getCountry());
+                } else if (category.equalsIgnoreCase("drama")) {
+                    contentToSave.setReleaseDate(content.getReleaseDate());
+                    contentToSave.setStatus(content.getStatus());
+                } else if (category.equalsIgnoreCase("webtoon")) {
+                    contentToSave.setPublish(content.getPublish());
+                }
                 contentRepository.save(contentToSave);
             }
             saveContentSite(contentToSave, platform, content.getContentId(), content.getAgeRating());

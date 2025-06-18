@@ -15,22 +15,20 @@ class NaverSeriesCrawler:
         self.driver = driver
         self.xpath_class = xpath_class
         self.driver.get(self.xpath_class.URL.value)
-        # activate_bot(driver)
+        activate_bot(driver)
 
     def crawl(self):
         novels = []
         try:
             total_pages = self.get_last_page_number()
             novel_links = self.get_naver_series_data(total_pages)
-            content = self.extract_novel_data(novel_links[1])
-            novels.append(content)
-            # for href in novel_links:
-            #     try:
-            #         content = self.extract_novel_data(href)
-            #         novels.append(content)
-            #     except Exception as e:
-            #         logging.error(f"예상치 못한 오류 발생 - 다음 항목으로 진행: {href}")
-            #         # logging.exception(e)
+            for href in novel_links:
+                try:
+                    content = self.extract_novel_data(href)
+                    novels.append(content)
+                except Exception as e:
+                    logging.error(f"예상치 못한 오류 발생 - 다음 항목으로 진행: {href}")
+                    # logging.exception(e)
         except TimeoutException as e:
             raise Exception("TimeoutException 발생", e)
         return novels

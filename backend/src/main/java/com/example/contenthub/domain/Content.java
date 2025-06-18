@@ -9,10 +9,12 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Document(collection = "contents")
 public class Content {
 
@@ -30,10 +32,14 @@ public class Content {
 
     private List<SiteDetail> sites = new ArrayList<>();
 
-    // --- 타입별로 optional --- 영화, 드라마
-    // private String country;
-    // private List<String> actors;
-    // private String releaseDate;
+    // 영화
+    private String country;
+    private List<String> actors;
+    // 드라마
+    private String releaseDate;
+    private String status;
+    // 웹툰
+    private String publish;
 
     public Content(String title, String synopsis, List<String> genre, String coverImg, String category) {
         this.title = title;

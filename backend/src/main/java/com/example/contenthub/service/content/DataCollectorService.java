@@ -50,8 +50,8 @@ public class DataCollectorService {
         JsonNode responseBody = response.getBody();
         System.out.println("수집 결과: " + responseBody);
         JsonNode data = responseBody.get("data");
-        List<ContentDataDTO> contentList = ContentDataUtils.convertToDTOList(data);
-        contentService.saveContents(contentList, platform, category);
+        // List<ContentDataDTO> contentList = ContentDataUtils.convertToDTOList(data);
+        // contentService.saveContents(contentList, platform, category);
 
     }
 

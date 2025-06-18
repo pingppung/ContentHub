@@ -45,6 +45,7 @@ function ContentDetail() {
 		if (ageAdult >= 18) ageIcon = platformIcons['청불'];
 		else if (ageAdult == 12) ageIcon = platformIcons['이용12'];
 		else if (ageAdult == 15) ageIcon = platformIcons['이용15'];
+		else return null;
 		return <img src={ageIcon} style={{ width: '15px', height: '15px' }} />;
 	};
 
