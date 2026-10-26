@@ -35,7 +35,6 @@ AI로 만든 화면 디자인 예시입니다. 실제 실행 화면과는 차이
 React에서 Spring Boot API를 호출합니다. Spring Boot는 DB 조회·저장을 맡고, 수집과 유사도 계산이 필요할 때 Python 서버에 요청합니다.
 
 ## 기술 스택
-
 - Frontend: JavaScript, React 18, React Router — 페이지 구성과 상세 모달 이동
 - Styling / HTTP: CSS Modules, Axios — 페이지별 스타일과 백엔드 요청
 - Backend: Java 17, Spring Boot 3.2.2, Spring Security — 조회·수집·회원 API와 JWT 인증
@@ -153,7 +152,7 @@ python -m uvicorn data_pipeline.app:app --host 127.0.0.1 --port 5000
 크롤러는 `TEST_LIMIT = 2`로 수집 개수를 제한하며, 로그인 사용 여부는 플랫폼별 설정에서 관리합니다.
 로그인을 켜는 경우 Python 실행 환경에 `KAKAO_ID`·`KAKAO_PWD` 또는 `NAVER_ID`·`NAVER_PWD`를 설정해야 합니다.
 
-### 3. 프런트엔드
+### 3. 프론트엔드
 
 ```shell
 cd frontend
@@ -162,6 +161,3 @@ npm start
 ```
 
 `http://localhost:3000`에서 확인할 수 있습니다. 개발 서버는 API 요청을 `localhost:8080`으로 프록시합니다.
-
-
-
