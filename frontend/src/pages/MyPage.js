@@ -1,28 +1,20 @@
 import React, { useState, useEffect } from "react";
-import AuthService from "../services/AuthService"; 
+import AuthService from "../services/AuthService";
 
 function MyPage() {
   const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(false);
   useEffect(() => {
-    try {
-      const decoded = AuthService.decodeToken(); 
-      console.log(decoded);
-      if (decoded) {
-        setUserInfo(decoded);
-      } else {
-        setUserInfo(null);
-      }
-    } catch (error) {
-      console.error("디코딩 오류", error);
-    }
+    let active = true;
+    AuthService.getCurrentUser()
+      .then(user => { if (active) setUserInfo(user); })
+      .catch(() => { if (active) setError(true); });
+    return () => { active = false; };
   }, []);
 
-  if (!userInfo) {
-    return <div>로딩 중...</div>;  // userInfo가 null일 경우 로딩 중 표시
-  }
-  
-  return (
-    <div className="MyPage_container">{userInfo.username}님의 페이지입니다.</div>
-  );
+  if (error) return <div role="alert">회원 정보를 불러오지 못했습니다.</div>;
+  if (!userInfo) return <div>로딩 중...</div>;
+  return <div className="MyPage_container">{userInfo.userId}님의 페이지입니다.</div>;
 }
+
 export default MyPage;

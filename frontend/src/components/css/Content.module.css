@@ -1,0 +1,19 @@
+.novel { width: 100%; cursor: pointer; background: white; }
+.img__container { width: 100%; aspect-ratio: 2/3; position: relative; overflow: hidden; border-radius: 8px; background: #f8f9fa; }
+.novel__img { width: 100%; height: 100%; object-fit: fill; transition: transform .4s ease; }
+.novel:hover .novel__img { transform: scale(1.03); }
+.novel__title { font-size: 14px; color: #343a40; font-weight: 500; line-height: 1.4; padding: 12px 12px 8px; overflow: hidden; text-overflow: ellipsis; word-break: keep-all; overflow-wrap: break-word; text-align: center; }
+@media (max-width: 1200px) { .novel__title { font-size: 13px; padding: 12px 10px 8px; } }
+@media (max-width: 800px) { .novel__title { font-size: 12px; height: 34px; padding: 12px 8px 8px; } }
+
+.discovery { min-width: 0; border: 1px solid #eeedf6; border-radius: 9px; overflow: hidden; box-shadow: 0 4px 14px #22134e04; transition: transform .2s, box-shadow .2s; }
+.discovery:hover { transform: translateY(-3px); box-shadow: 0 7px 20px #48357912; }
+.discovery .img__container { aspect-ratio: 3 / 4; border-radius: 0; background: #efecf7; display: flex; align-items: center; justify-content: center; }
+.discovery .novel__img { width: 100%; height: auto; max-height: none; flex-shrink: 0; object-fit: contain; transform: none; }
+.discovery:hover .novel__img { transform: none; }
+.discovery .novel__title { margin: 0; height: auto; padding: 10px 12px 0; text-align: left; font-size: 14px; font-weight: 700; color: #211939; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.categoryTag { position: absolute; bottom: 8px; left: 10px; padding: 4px 9px; border-radius: 16px; font-size: 10px; line-height: 1; color: #5334c0; background: #f0ebff; font-weight: 700; }
+.metadata { padding: 4px 12px 12px; }
+.metadata p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; line-height: 1.5; color: #8c849f; }
+.platform { display: block; margin-top: 8px; font-size: 11px; color: #504666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 480px) { .discovery .novel__title { font-size: 12px; padding: 9px 10px 0; } .metadata { padding: 4px 10px 10px; } .metadata p { font-size: 11px; } }

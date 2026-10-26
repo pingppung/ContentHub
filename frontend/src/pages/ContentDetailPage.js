@@ -1,118 +1,220 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
+import { platformIcons } from "../enum/PlatformIcons";
+import UserActivityService from "../services/UserActivityService";
 import styles from "./css/ContentDetail.module.css";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-import UserActivityService from '../services/UserActivityService';
-import Header from "../components/Header";
+import AuthService from "../services/AuthService";
+import ContentOptions from "../components/content/ContentOptions";
+import { FaHeart, FaBookmark, FaShare } from "react-icons/fa";
 
 function ContentDetail() {
   const [liked, setLiked] = useState(false);
-  const [count, setCount] = useState();
-  const { search, state } = useLocation();
-  const [category, SetCategory] = useState("novel");
-
-  const location = useLocation();
+  const [saved, setSaved] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const navigate = useNavigate();
-  const { background, content } = location.state || {};
-  console.log(content);
-  // useEffect(() => {
+  const location = useLocation();
+  const { content, category } = location.state || {};
+  const isLongText = content.synopsis.length > 100;
 
-  //   const fetchLikeStatus = async () => {
-  //     try {
-  //       const { liked } = await UserActivityService.checkLikeStatus(contentId, category);
-  //       setLiked(liked);
-  //     } catch (error) {
-  //       console.error('Failed to fetch like status:', error);
-  //     }
-  //   };
-  //   fetchLikeStatus();
-  // }, [contentId, category]);
-  const platformIcons = {
-    '네이버시리즈': 'https://ssl.pstatic.net/static/nstore/series_favicon_152.ico', // 네이버 시리즈 아이콘
-    '카카오페이지': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Kakao_page_logo.png/250px-Kakao_page_logo.png',  // 카카오 페이지 아이콘
-    '네이버웹툰': 'https://your-icon-url.com/naver-webtoon-icon.png', // 네이버 웹툰 아이콘
-    '왓챠': 'https://play-lh.googleusercontent.com/vAkKvTtE8kdb0MWWxOVaqYVf0_suB-WMnfCR1MslBsGjhI49dAfF1IxcnhtpL3PnjVY=w240-h480-rw', // 왓챠 아이콘
-    '넷플릭스': 'https://your-icon-url.com/netflix-icon.png', // 넷플릭스 아이콘
-    '디즈니플러스': 'https://your-icon-url.com/disney-plus-icon.png', // 디즈니플러스 아이콘
-    '티빙': 'https://your-icon-url.com/tving-icon.png', // 티빙 아이콘
-    '웨이브': 'https://your-icon-url.com/wavve-icon.png', // 웨이브 아이콘
-    '기타': 'https://your-icon-url.com/default-icon.png', // 기본 아이콘
+  useEffect(() => {
+    document.body.style.overflow = "hidden"; // 스크롤을 막는 처리
+    const loadStatus = async () => {
+      try {
+        const token = AuthService.getToken();
+        const [likeStatus, saveStatus] = await Promise.all([
+          UserActivityService.fetchLikeStatus(content.title, category, token),
+          UserActivityService.fetchSaveStatus(content.title, category, token),
+        ]);
+        setLiked(likeStatus);
+        setSaved(saveStatus);
+      } catch (error) {
+        console.error("Failed to fetch status:", error);
+      }
+    };
+    loadStatus();
+    return () => { document.body.style.overflow = ""; };
+  }, [category, content.title]);
+
+ 
+  const getPlatformIconImage = (platform) => {
+    const iconUrl = platformIcons[platform] || platformIcons["기타"];
+    return (
+      <img
+        src={iconUrl}
+        alt={`${platform} 아이콘`}
+        style={{ width: "20px", height: "20px" }}
+      />
+    );
   };
 
-  const getIconForSite = (platform) => {
-    const iconUrl = platformIcons[platform] || platformIcons['기타'];
-    return <img src={iconUrl} alt={`${platform} 아이콘`} style={{ width: '50px', height: '50px' }} />;
+  const getAgeAdultIcon = (ageAdult) => {
+    let ageIcon = null;
+    if (ageAdult >= 18) ageIcon = platformIcons["청불"];
+    else if (Number(ageAdult) === 12) ageIcon = platformIcons["이용12"];
+    else if (Number(ageAdult) === 15) ageIcon = platformIcons["이용15"];
+    else return null;
+    return <img src={ageIcon} alt={`${ageAdult}+`} style={{ width: "15px", height: "15px" }} />;
   };
 
   const handleLikeToggle = async () => {
-    // try {
-    //   if (liked) {
-    //     await removeLike(contentId, category);
-    //   } else {
-    //     await addLike(contentId, category);
-    //   }
-    //   setLiked(!liked); // 상태 변경
-
-    //   setCount(prevCount => (liked ? prevCount - 1 : prevCount + 1));
-    // } catch (error) {
-    //   console.error('Failed to toggle like:', error);
-    // }
+    setLiked((prev) => !prev);
+    try {
+      const token = AuthService.getToken();
+      if (liked) {
+        await UserActivityService.removeLike(content.title, category, token);
+      } else {
+        await UserActivityService.addLike(content.title, category, token);
+      }
+      setLiked(!liked);
+    } catch (error) {
+      console.error("Failed to toggle save:", error);
+    }
   };
 
-  // const getSiteUrl = (siteName) => {
-  //   if (siteName === "NaverSeries") {
-  //     return "https://series.naver.com/novel/detail.series?productNo=";
-  //   } else {
-  //     return 'Unknown site';
-  //   }
-  // }
-  if (!content) {
-    return <p>Loading...</p>;
-  }
+  const handleSaveToggle = async () => {
+    try {
+      const token = AuthService.getToken();
+      if (saved) {
+        await UserActivityService.removeSave(content.title, category, token);
+      } else {
+        await UserActivityService.addSave(content.title, category, token);
+      }
+      setSaved(!saved);
+    } catch (error) {
+      console.error("Failed to toggle save:", error);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.share({
+        title: content.title,
+        text: content.synopsis,
+        url: window.location.href,
+      });
+    } catch (error) {
+      console.error("Failed to share:", error);
+    }
+  };
+
   const handleClose = () => {
-    navigate(-1); // 뒤로 가기 (모달 닫기)
+    document.body.style.overflow = "";
+    navigate(-1);
+  };
+
+  const redirectToPlatform = (url) => {
+    window.open(url, "_blank");
   };
 
   return (
     <div className={styles.modalOverlay}>
-      <div className={styles.modalContentWrapper}>
-        <section className={styles.modalBody}>
-          <header className={styles.modalHeader}>
-            <h2 className={styles.contentTitle}>{content.title}</h2>
-            <button className={styles.closeButton} onClick={handleClose}>X</button>
-          </header>
+      <div className={styles.modalContainer}>
+        {/* 배경 */}
+        <div className={styles.modalBackground}></div>
+        <button className={styles.closeButton} onClick={handleClose}>
+          X
+        </button>
 
-          <div className={styles.modalContent}>
-            <img src={content.coverImg} alt={content.title} className={styles.coverImg} />
-            <div className={styles.contentDetails}>
-              <h4 className={styles.genre}>{content.genre}</h4>
-              <p>{content.description}</p>
+        {/* 내용 */}
+        <div className={styles.contentSection}>
+          {/* 좌측: 커버 이미지와 좋아요 버튼 */}
+          <div className={styles.coverContainer}>
+            <img
+              src={content.coverImg}
+              alt={content.title}
+              className={styles.coverImg}
+            />
+            <div className={styles.actionButtons}>
+              <button
+                className={`${styles.actionButton} ${
+                  liked ? styles.active : ""
+                }`}
+                onClick={handleLikeToggle}
+              >
+                <FaHeart />
+                <span>좋아요</span>
+              </button>
+              <button
+                className={`${styles.actionButton} ${
+                  saved ? styles.active : ""
+                }`}
+                onClick={handleSaveToggle}
+              >
+                <FaBookmark />
+                <span>저장</span>
+              </button>
+              <button className={styles.actionButton} onClick={handleShare}>
+                <FaShare />
+                <span>공유</span>
+              </button>
             </div>
           </div>
-        </section>
 
-        {content.links.map((item, index) => (
-          <p key={index}>
-            <a href={item.url} target="_blank" rel="noopener noreferrer">
-              {getIconForSite(item.platform)}
-            </a>
-          </p>
-        ))}
-        <div className={styles.likeSection}>
-          <button
-            className={`${styles.likeButton} ${liked ? styles.liked : ""}`}
-            onClick={handleLikeToggle}
-          >
-            <span className={styles.icon}>
-              {liked ? <AiFillHeart size={24} /> : <AiOutlineHeart size={24} />}
-            </span>
-            <span className={styles.count}>{count}</span>
-          </button>
+          {/* 우측: 텍스트 정보 */}
+          <div className={styles.contentContainer}>
+            <h2 className={styles.contentTitle}>{content.title}</h2>
+
+            {/* 태그 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>태그</span>
+              <span className={styles.spacing} />
+              <span className={styles.value}>
+                {content.genre.map((g, i) => (
+                  <span key={i}>#{g} </span>
+                ))}
+              </span>
+            </div>
+
+            {/* 회차 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>화별</span>
+              <span className={styles.spacing} />
+              <span className={styles.value}>총 00화 / 완결or미완결</span>
+            </div>
+
+            {/* 연재 플랫폼 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>연재 플랫폼</span>
+              <span className={styles.spacing} />
+              <div className={styles.platforms}>
+                {content.links.map((item, index) => (
+                  <div
+                    key={index}
+                    className={styles.platform}
+                    onClick={() => redirectToPlatform(item.url)}
+                  >
+                    {getPlatformIconImage(item.platform)}
+                    {item.platform}
+                    {getAgeAdultIcon(item.age_rating)}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 줄거리 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>줄거리</span>
+              <span className={styles.spacing} />
+              <p className={styles.value}>
+                {expanded || !isLongText
+                  ? content.synopsis
+                  : `${content.synopsis.substring(0, 100)}...`}
+                {isLongText && (
+                  <button
+                    onClick={() => setExpanded(!expanded)}
+                    className={styles.toggleButton}
+                  >
+                    {expanded ? "접기" : "더보기"}
+                  </button>
+                )}
+              </p>
+            </div>
+          </div>
         </div>
+        <ContentOptions content={content} category={category} />
       </div>
     </div>
   );
-
 }
 
 export default ContentDetail;

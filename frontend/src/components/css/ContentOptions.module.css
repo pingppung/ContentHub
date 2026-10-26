@@ -1,0 +1,45 @@
+.contentOptions {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 20px;
+}
+
+.tabButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+button {
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.activeTab {
+  font-weight: bold;
+  border-bottom: 2px solid #000;
+  /* 탭 활성화 시 밑줄 추가 */
+}
+
+.tabContent {
+  margin-top: 1rem;
+}
+
+.similarContentContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+.similarContentContainer > div {
+  flex-basis: 150px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.similarContentContainer img {
+  height: 225px; 
+}

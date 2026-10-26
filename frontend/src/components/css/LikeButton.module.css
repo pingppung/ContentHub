@@ -1,0 +1,28 @@
+
+.likeSection {
+  margin-top: 20px;
+}
+
+.likeButton {
+  display: flex;
+  align-items: center;
+  background-color: #ff4b5c;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.likeButton:hover {
+  background-color: #ff2a3d;
+}
+
+.likeButton.liked {
+  background-color: #f24d6b;
+}
+
+.likeButton .icon {
+  /* margin-right: 8px; */
+  height: 24px;
+}

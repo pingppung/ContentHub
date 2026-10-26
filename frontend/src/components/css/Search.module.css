@@ -11,10 +11,14 @@
   font-size: 14px;
 }
 
-.search img {
-  position: absolute;
-  width: 17px;
-  top: 10px;
-  right: 12px;
-  margin: 0;
-}
+
+
+.search button { position: absolute; right: 5px; top: 5px; bottom: 5px; padding: 0 12px; border: 0; border-radius: 6px; background: #6549ff; color: white; cursor: pointer; }
+.search input { padding-right: 64px; }
+.discovery { width: 100%; position: relative; text-align: left; }
+.discovery::before { content: ''; position: absolute; left: 21px; top: 17px; width: 12px; height: 12px; border: 2px solid #9992b5; border-radius: 50%; pointer-events: none; }
+.discovery::after { content: ''; position: absolute; left: 34px; top: 31px; width: 7px; height: 2px; background: #9992b5; transform: rotate(45deg); pointer-events: none; }
+.discovery input { height: 52px; border-radius: 30px; border: 1px solid #d7d1eb; box-shadow: 0 3px 12px #3a25620a; padding: 0 100px 0 50px; color: #332b51; background: #fff; font-size: 13px; }
+.discovery input::placeholder { color: #a09ab6; }
+.discovery button { border-radius: 24px; min-width: 82px; background: linear-gradient(120deg, #704eff, #5941ff); font-weight: 600; }
+@media (max-width: 480px) { .discovery input { font-size: 11px; padding-left: 43px; padding-right: 76px; } .discovery button { min-width: 62px; font-size: 12px; } }
