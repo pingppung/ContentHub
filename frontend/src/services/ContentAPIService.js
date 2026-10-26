@@ -1,35 +1,32 @@
 import axios from "axios";
 
-async function getContentData(category, selectedGenre) {
-    try {
-        const response = await axios.get("/contents", {
-            params: { category: category},
-            headers: { "Content-Type": "application/json" }
-        });
+function searchParams(category, selectedGenre, inputSearch) {
+    const type = category?.trim().toUpperCase();
+    const genre = selectedGenre?.trim();
+    const title = inputSearch?.trim();
+    return {
+        ...(type ? { type } : {}),
+        ...(genre && genre !== "전체" ? { genre } : {}),
+        ...(title ? { title } : {})
+    };
+}
 
-        console.log("데이터 가져오기 성공: ", response.data);
+async function fetchContents(params) {
+    try {
+        const response = await axios.get("/contents", { params });
         return response.data;
-    } catch (err) {
-        console.log("데이터 가져오기 실패:", err);
+    } catch (error) {
+        console.error("Failed to fetch contents:", error);
         return null;
     }
+}
+
+async function getContentData(category, selectedGenre) {
+    return fetchContents(searchParams(category, selectedGenre));
 }
 
 async function getContentBySearch(category, selectedGenre, inputSearch) {
-    try {
-        const params = {};
-        if (category) params.category = category;
-        if (inputSearch) params.title = inputSearch;
-        if (selectedGenre) params.genre = selectedGenre;
-        console.log(params);
-        const response = await axios.get("/contents/search", { params });
-        console.log("데이터 가져오기 성공: ", response.data);
-        return response.data;
-    } catch (err) {
-        console.log("데이터 가져오기 실패:", err);
-        return null;
-    }
+    return fetchContents(searchParams(category, selectedGenre, inputSearch));
 }
 
-
-export { getContentData, getContentBySearch};
+export { getContentData, getContentBySearch };

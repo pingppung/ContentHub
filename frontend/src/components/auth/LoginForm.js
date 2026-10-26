@@ -9,7 +9,7 @@ function LoginForm({ onAuthSuccess }) {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const res = await AuthService.login({ userId, password });
+      await AuthService.login({ userId, password });
       onAuthSuccess(userId); // 인증 성공 시 부모 컴포넌트에 전달
     } catch (error) {
       console.error("로그인 오류 : ", error);

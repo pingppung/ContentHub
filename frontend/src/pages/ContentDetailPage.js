@@ -1,199 +1,220 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
-import LikeButton from "../components/common/LikeButton";
+import { useLocation, useNavigate } from "react-router-dom";
 import { platformIcons } from "../enum/PlatformIcons";
-import UserActivityService from '../services/UserActivityService';
+import UserActivityService from "../services/UserActivityService";
 import styles from "./css/ContentDetail.module.css";
 import AuthService from "../services/AuthService";
 import ContentOptions from "../components/content/ContentOptions";
-import { FaHeart, FaBookmark, FaShare, FaEye } from 'react-icons/fa';
+import { FaHeart, FaBookmark, FaShare } from "react-icons/fa";
 
 function ContentDetail() {
-	const [liked, setLiked] = useState(false);
-	const [saved, setSaved] = useState(false);
-	const [count, setCount] = useState(0);
-	const [expanded, setExpanded] = useState(false);
-	const navigate = useNavigate();
-	const location = useLocation();
-	const { background, content, category } = location.state || {};
-	const isLongText = content.description.length > 100;
-	useEffect(() => {
-		document.body.style.overflow = 'hidden'; // 스크롤을 막는 처리
-		const loadStatus = async () => {
-			try {
-				const token = AuthService.getToken();
-				const [likeStatus, saveStatus] = await Promise.all([
-					UserActivityService.fetchLikeStatus(content.title, category, token),
-					UserActivityService.fetchSaveStatus(content.title, category, token)
-				]);
-				setLiked(likeStatus);
-				setSaved(saveStatus);
-			} catch (error) {
-				console.error('Failed to fetch status:', error);
-			}
-		};
-		loadStatus();
-	}, []);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { content, category } = location.state || {};
+  const isLongText = content.synopsis.length > 100;
 
-	const getPlatformIconImage = (platform) => {
-		const iconUrl = platformIcons[platform] || platformIcons['기타'];
-		return <img src={iconUrl} alt={`${platform} 아이콘`} style={{ width: '20px', height: '20px' }} />;
-	};
+  useEffect(() => {
+    document.body.style.overflow = "hidden"; // 스크롤을 막는 처리
+    const loadStatus = async () => {
+      try {
+        const token = AuthService.getToken();
+        const [likeStatus, saveStatus] = await Promise.all([
+          UserActivityService.fetchLikeStatus(content.title, category, token),
+          UserActivityService.fetchSaveStatus(content.title, category, token),
+        ]);
+        setLiked(likeStatus);
+        setSaved(saveStatus);
+      } catch (error) {
+        console.error("Failed to fetch status:", error);
+      }
+    };
+    loadStatus();
+    return () => { document.body.style.overflow = ""; };
+  }, [category, content.title]);
 
-	const getAgeAdultIcon = (ageAdult) => {
-		let ageIcon = null;
-		if (ageAdult >= 18) ageIcon = platformIcons['청불'];
-		else if (ageAdult == 12) ageIcon = platformIcons['이용12'];
-		else if (ageAdult == 15) ageIcon = platformIcons['이용15'];
-		else return null;
-		return <img src={ageIcon} style={{ width: '15px', height: '15px' }} />;
-	};
+ 
+  const getPlatformIconImage = (platform) => {
+    const iconUrl = platformIcons[platform] || platformIcons["기타"];
+    return (
+      <img
+        src={iconUrl}
+        alt={`${platform} 아이콘`}
+        style={{ width: "20px", height: "20px" }}
+      />
+    );
+  };
 
-	const handleLikeToggle = async () => {
-		setLiked((prev) => !prev);
-	};
+  const getAgeAdultIcon = (ageAdult) => {
+    let ageIcon = null;
+    if (ageAdult >= 18) ageIcon = platformIcons["청불"];
+    else if (Number(ageAdult) === 12) ageIcon = platformIcons["이용12"];
+    else if (Number(ageAdult) === 15) ageIcon = platformIcons["이용15"];
+    else return null;
+    return <img src={ageIcon} alt={`${ageAdult}+`} style={{ width: "15px", height: "15px" }} />;
+  };
 
-	const handleSaveToggle = async () => {
-		try {
-			const token = AuthService.getToken();
-			if (saved) {
-				await UserActivityService.removeSave(content.title, category, token);
-			} else {
-				await UserActivityService.addSave(content.title, category, token);
-			}
-			setSaved(!saved);
-		} catch (error) {
-			console.error('Failed to toggle save:', error);
-		}
-	};
+  const handleLikeToggle = async () => {
+    setLiked((prev) => !prev);
+    try {
+      const token = AuthService.getToken();
+      if (liked) {
+        await UserActivityService.removeLike(content.title, category, token);
+      } else {
+        await UserActivityService.addLike(content.title, category, token);
+      }
+      setLiked(!liked);
+    } catch (error) {
+      console.error("Failed to toggle save:", error);
+    }
+  };
 
-	const handleShare = async () => {
-		try {
-			await navigator.share({
-				title: content.title,
-				text: content.description,
-				url: window.location.href,
-			});
-		} catch (error) {
-			console.error('Failed to share:', error);
-		}
-	};
+  const handleSaveToggle = async () => {
+    try {
+      const token = AuthService.getToken();
+      if (saved) {
+        await UserActivityService.removeSave(content.title, category, token);
+      } else {
+        await UserActivityService.addSave(content.title, category, token);
+      }
+      setSaved(!saved);
+    } catch (error) {
+      console.error("Failed to toggle save:", error);
+    }
+  };
 
-	const handleClose = () => {
-		document.body.style.overflow = '';
-		navigate(-1);
-	};
+  const handleShare = async () => {
+    try {
+      await navigator.share({
+        title: content.title,
+        text: content.synopsis,
+        url: window.location.href,
+      });
+    } catch (error) {
+      console.error("Failed to share:", error);
+    }
+  };
 
-	const redirectToPlatform = (url) => {
-		window.open(url, "_blank");
-	}
+  const handleClose = () => {
+    document.body.style.overflow = "";
+    navigate(-1);
+  };
 
-	return (
-		<div className={styles.modalOverlay}>
-			<div className={styles.modalContainer}>
-				{/* 배경 */}
-				<div className={styles.modalBackground}></div>
-				<button className={styles.closeButton} onClick={handleClose}>X</button>
+  const redirectToPlatform = (url) => {
+    window.open(url, "_blank");
+  };
 
-				{/* 내용 */}
-				<div className={styles.contentSection}>
-					{/* 좌측: 커버 이미지와 좋아요 버튼 */}
-					<div className={styles.coverContainer}>
-						<img src={content.coverImg} alt={content.title} className={styles.coverImg} />
-						<div className={styles.actionButtons}>
-							<button
-								className={`${styles.actionButton} ${liked ? styles.active : ''}`}
-								onClick={handleLikeToggle}
-							>
-								<FaHeart />
-								<span>좋아요</span>
-							</button>
-							<button
-								className={`${styles.actionButton} ${saved ? styles.active : ''}`}
-								onClick={handleSaveToggle}
-							>
-								<FaBookmark />
-								<span>저장</span>
-							</button>
-							<button
-								className={styles.actionButton}
-								onClick={handleShare}
-							>
-								<FaShare />
-								<span>공유</span>
-							</button>
-						</div>
-					</div>
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContainer}>
+        {/* 배경 */}
+        <div className={styles.modalBackground}></div>
+        <button className={styles.closeButton} onClick={handleClose}>
+          X
+        </button>
 
-					{/* 우측: 텍스트 정보 */}
-					<div className={styles.contentContainer}>
-						<h2 className={styles.contentTitle}>{content.title}</h2>
+        {/* 내용 */}
+        <div className={styles.contentSection}>
+          {/* 좌측: 커버 이미지와 좋아요 버튼 */}
+          <div className={styles.coverContainer}>
+            <img
+              src={content.coverImg}
+              alt={content.title}
+              className={styles.coverImg}
+            />
+            <div className={styles.actionButtons}>
+              <button
+                className={`${styles.actionButton} ${
+                  liked ? styles.active : ""
+                }`}
+                onClick={handleLikeToggle}
+              >
+                <FaHeart />
+                <span>좋아요</span>
+              </button>
+              <button
+                className={`${styles.actionButton} ${
+                  saved ? styles.active : ""
+                }`}
+                onClick={handleSaveToggle}
+              >
+                <FaBookmark />
+                <span>저장</span>
+              </button>
+              <button className={styles.actionButton} onClick={handleShare}>
+                <FaShare />
+                <span>공유</span>
+              </button>
+            </div>
+          </div>
 
-						{/* 태그 */}
-						<div className={styles.infoItem}>
-							<span className={styles.label}>태그</span>
-							<span className={styles.spacing} />
-							<span className={styles.value}>
-								{content.genre.map((g, i) => (
-									<span key={i}>#{g} </span>
-								))}
-							</span>
-						</div>
+          {/* 우측: 텍스트 정보 */}
+          <div className={styles.contentContainer}>
+            <h2 className={styles.contentTitle}>{content.title}</h2>
 
-						{/* 회차 */}
-						<div className={styles.infoItem}>
-							<span className={styles.label}>화별</span>
-							<span className={styles.spacing} />
-							<span className={styles.value}>총 00화 / 완결or미완결</span>
-						</div>
+            {/* 태그 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>태그</span>
+              <span className={styles.spacing} />
+              <span className={styles.value}>
+                {content.genre.map((g, i) => (
+                  <span key={i}>#{g} </span>
+                ))}
+              </span>
+            </div>
 
-						{/* 연재 플랫폼 */}
-						<div className={styles.infoItem}>
-							<span className={styles.label}>연재 플랫폼</span>
-							<span className={styles.spacing} />
-							<div className={styles.platforms}>
-								{content.links.map((item, index) => (
-									<div
-										key={index}
-										className={styles.platform}
-										onClick={() => redirectToPlatform(item.url)}
-									>
-										{getPlatformIconImage(item.platform)}
-										{item.platform}
-										{getAgeAdultIcon(item.age_rating)}
-									</div>
-								))}
-							</div>
-						</div>
+            {/* 회차 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>화별</span>
+              <span className={styles.spacing} />
+              <span className={styles.value}>총 00화 / 완결or미완결</span>
+            </div>
 
-						{/* 줄거리 */}
-						<div className={styles.infoItem}>
-							<span className={styles.label}>줄거리</span>
-							<span className={styles.spacing} />
-							<p className={styles.value}>
-								{expanded || !isLongText
-									? content.description
-									: `${content.description.substring(0, 100)}...`}
-								{isLongText && (
-									<button
-										onClick={() => setExpanded(!expanded)}
-										className={styles.toggleButton}
-									>
-										{expanded ? '접기' : '더보기'}
-									</button>
-								)}
-							</p>
-						</div>
-					</div>
-				</div>
-				<ContentOptions />
+            {/* 연재 플랫폼 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>연재 플랫폼</span>
+              <span className={styles.spacing} />
+              <div className={styles.platforms}>
+                {content.links.map((item, index) => (
+                  <div
+                    key={index}
+                    className={styles.platform}
+                    onClick={() => redirectToPlatform(item.url)}
+                  >
+                    {getPlatformIconImage(item.platform)}
+                    {item.platform}
+                    {getAgeAdultIcon(item.age_rating)}
+                  </div>
+                ))}
+              </div>
+            </div>
 
-
-
-			</div>
-
-		</div >
-	);
+            {/* 줄거리 */}
+            <div className={styles.infoItem}>
+              <span className={styles.label}>줄거리</span>
+              <span className={styles.spacing} />
+              <p className={styles.value}>
+                {expanded || !isLongText
+                  ? content.synopsis
+                  : `${content.synopsis.substring(0, 100)}...`}
+                {isLongText && (
+                  <button
+                    onClick={() => setExpanded(!expanded)}
+                    className={styles.toggleButton}
+                  >
+                    {expanded ? "접기" : "더보기"}
+                  </button>
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+        <ContentOptions content={content} category={category} />
+      </div>
+    </div>
+  );
 }
 
 export default ContentDetail;

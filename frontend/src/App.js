@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Home from "./pages/HomePage";
+import { Routes, Route, useLocation } from "react-router-dom";
 import ContentHome from "./pages/ContentHomePage";
 import ContentDetail from "./pages/ContentDetailPage";
 import MyPage from "./pages/MyPage";
@@ -21,6 +19,7 @@ function App() {
   return (
     <>
       <Routes location={background || location}>
+        <Route path="/home" element={<ContentHome />} />
         <Route path="/contents/:category" element={<ContentHome />} />
         <Route path="/auth/:authType" element={<AuthPage />} />
         <Route path="/success" element={<div>success</div>} />
@@ -30,7 +29,7 @@ function App() {
         <Route element={<PrivateRoute redirectPath="/" />}>
           <Route path="/admin" element={<AdminLayout />} />
         </Route>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<ContentHome />} />
       </Routes>
       {background && (
         <Routes>

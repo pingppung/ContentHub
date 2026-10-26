@@ -13,7 +13,7 @@ application.properties
 
 #데이터 수집
 /data_collector/api_collector/configs
-/data_collector/crawl_collector/xpaths
+/data_pipeline/infrastructure/selectors/*.py
 /data_collector/enums/platform.py
 
 db_data/
@@ -54,3 +54,12 @@ yarn-error.log*
 
 ## 셀레니움
 chromedriver.exe
+
+# Markdown documents: publish only the root README.
+*.[mM][dD]
+!/README.md
+
+# Python generated files
+__pycache__/
+*.py[cod]
+.venv/

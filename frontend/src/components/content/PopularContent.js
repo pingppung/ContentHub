@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../css/PopularContent.module.css';
 
-function PopularContent({ contents }) {
+function PopularContent({ contents, variant }) {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
@@ -49,9 +49,8 @@ function PopularContent({ contents }) {
     if (!contents || contents.length === 0) {
         return null;
     }
-    console.log(contents);
     return (
-        <div className={styles.popularContainer}>
+        <div className={`${styles.popularContainer} ${variant === 'hero' ? styles.hero : ''}`}>
             <div className={styles.carouselWrapper}>
                 {getVisibleContents().map((content, index) => (
                     <div
@@ -67,7 +66,7 @@ function PopularContent({ contents }) {
                             <div className={styles.contentInfo}>
                                 <div className={styles.genreTag}>{content.genre}</div>
                                 <h2>{content.title}</h2>
-                                <p>{content.summary}</p>
+                                <p>{content.synopsis}</p>
                             </div>
                         </div>
                     </div>

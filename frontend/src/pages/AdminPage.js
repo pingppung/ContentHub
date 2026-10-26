@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { TfiMenu } from "react-icons/tfi";
-import ContentCollector from '../components/admin/ContentCollector';
 import logo from '../images/logo.PNG'
 import './css/AdminPage.css'
 import { MenuOutlined } from '@ant-design/icons';
+import CollectionDashboard from '../components/admin/CollectionDashboard';
+import StatisticsDashboard from '../components/admin/StatisticsDashboard';
 
 function AdminLayout() {
   const [selectedMenu, setSelectedMenu] = useState('content');
@@ -19,15 +19,15 @@ function AdminLayout() {
   const renderContent = () => {
     switch (selectedMenu) {
       case 'content':
-        return <ContentCollector />;
+        return <CollectionDashboard />;
       case 'users':
         return <div>사용자 관리 페이지</div>;
       case 'statistics':
-        return <div>통계 페이지</div>;
+        return <StatisticsDashboard />;
       case 'settings':
         return <div>설정 페이지</div>;
       default:
-        return <ContentCollector />;
+        return <CollectionDashboard />;
     }
   };
 

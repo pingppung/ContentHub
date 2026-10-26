@@ -56,4 +56,5 @@ class UserActivityService {
 
 }
 
-export default new UserActivityService();
+const service = new UserActivityService();
+export default service;

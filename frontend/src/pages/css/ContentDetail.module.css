@@ -290,8 +290,8 @@
 }
 
 .actionButton.active {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgb(255 140 140 / 63%);
+  border-color: rgb(255 255 255 / 67%);
 }
 
 @media (max-width: 768px) {

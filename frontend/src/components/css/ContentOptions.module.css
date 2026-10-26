@@ -26,3 +26,20 @@ button {
 .tabContent {
   margin-top: 1rem;
 }
+
+.similarContentContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+.similarContentContainer > div {
+  flex-basis: 150px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.similarContentContainer img {
+  height: 225px; 
+}

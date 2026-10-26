@@ -1,5 +1,5 @@
   import axios from "axios";
-import { jwtDecode } from 'jwt-decode';
+
 
 
 class AuthService {
@@ -12,40 +12,12 @@ class AuthService {
     localStorage.removeItem("accessToken");
   }
 
-  decodeToken() {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
-      try {
-        return jwtDecode(token);
-      } catch (error) {
-        console.error("토큰 디코딩 오류", error);
-      }
-    }
-  }
-  //토큰 검증
-  async verifyToken(token) {
-    try {
-      const response = await axios.get("/auth/verifyToken", {
-        headers: {
-          "content-type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        withCredentials: true,
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  }
-  //관리 확인
-  async verifyAuth(token) {
-    return await axios.get("/auth/verifyAuth", {
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + token,
-      },
+  async getCurrentUser(token = this.getToken()) {
+    const response = await axios.get("/auth/me", {
+      headers: { Authorization: "Bearer " + token },
       withCredentials: true,
     });
+    return response.data;
   }
 
   async signUp(user) {
@@ -84,9 +56,8 @@ class AuthService {
     }
   }
 
-  async gotoMyPage() {
-    return await axios.get("/authenticate");
-  }
+
 }
 
-export default new AuthService();
+const service = new AuthService();
+export default service;

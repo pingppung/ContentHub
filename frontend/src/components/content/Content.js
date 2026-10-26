@@ -1,28 +1,30 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styles from "../css/Content.module.css";
 
-function Content({ title, coverImg, summary, genre, adultContent, openNovelDetail }) {
+function Content({ title, coverImg, synopsis, genre, openNovelDetail, variant, categoryLabel, links = [] }) {
 
   const handleClick = () => {
-    openNovelDetail({ title, coverImg, summary, genre});
+    openNovelDetail({ title, coverImg, synopsis, genre});
   };
   return (
-    <div className={styles.novel} onClick={handleClick}>
+    <div className={`${styles.novel} ${variant === 'discovery' ? styles.discovery : ''}`} onClick={handleClick}
+      role="button" tabIndex={0} onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          handleClick();
+        }
+      }}>
       <div className={styles.img__container}>
         <img src={coverImg} alt={title} className={styles.novel__img} />
+        {variant === 'discovery' && categoryLabel && <span className={styles.categoryTag}>{categoryLabel}</span>}
       </div>
       <h2 className={styles.novel__title}>
-        {adultContent ? <img src="https://cdn.imweb.me/upload/57a3ee0cb33d0.png" className={styles.icon__19} /> : null}
         {title}
       </h2>
-      <div className={styles.genre__container}>
-        {genre.map((g, index) => (
-          <span key={index} className={styles.genre__tag}>
-            {g}
-          </span>
-        ))}
-      </div>
+      {variant === 'discovery' && <div className={styles.metadata}>
+        <p>{synopsis || '새로운 이야기를 만나보세요.'}</p>
+        <span className={styles.platform}>{links.map(link => link.platform).join(' · ') || '콘텐츠 둘러보기'}</span>
+      </div>}
     </div>
   );
 }

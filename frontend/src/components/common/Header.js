@@ -5,30 +5,28 @@ import logo from "../../images/logo.PNG";
 // import chatIcon from '../../images/chatIcon.png';
 import styles from "../css/Header.module.css";
 
-function Header({ onSearch }) {
+function Header({ onSearch, variant }) {
   const [userInfo, setUserInfo] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState('home'); // 기본값은 'home'
-  const [searchInput, setSearchInput] = useState("");
+  const [, setSelectedMenu] = useState('home');
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const initialLoginState = location.state?.isLoggedIn || false;
-    setIsLoggedIn(initialLoginState);
-    console.log(initialLoginState);
-    try {
-      const decoded = AuthService.decodeToken();
-      setIsLoggedIn(true);
-      if (decoded) {
-        setUserInfo(decoded);
-      } else {
-        setUserInfo(null);
-        setIsLoggedIn(false);
-      }
-    } catch (error) {
-      console.error("디코딩 오류", error);
+    let active = true;
+    const token = AuthService.getToken();
+    setUserInfo(null);
+    setIsLoggedIn(false);
+    if (token) {
+      AuthService.getCurrentUser(token).then(user => {
+        if (!active) return;
+        setUserInfo(user);
+        setIsLoggedIn(true);
+      }).catch(error => {
+        if (active && error.response?.status === 401) AuthService.removeToken();
+      });
     }
+    return () => { active = false; };
   }, [location.state?.isLoggedIn]);
 
   const handleLoginClick = (e) => {
@@ -50,13 +48,6 @@ function Header({ onSearch }) {
   const goToMyPage = (e) => {
     navigate("/user");
     //     const token = UserService.getToken("accessToken");
-    //     UserService.verifyToken(token).then((res) => {
-    //       navigate("/user");
-    //     }).catch((error) => {
-    //       console.log(error);
-    //       navigate("/login");
-    //       //window.alert("로그인 후에 이용해줏");
-    //    });
   };
 
   const handleMenuClick = (menu) => {
@@ -64,7 +55,7 @@ function Header({ onSearch }) {
   };
 
   return (
-    <div className={styles.header_container}>
+    <div className={`${styles.header_container} ${variant === 'discovery' ? styles.discovery : ''}`}>
       <div className={styles.headerInner}>
         <img src={logo} alt="Logo" />
         <nav>
@@ -83,7 +74,7 @@ function Header({ onSearch }) {
                 handleMenuClick('novel');
                 navigate('/contents/novel');
               }}>
-              <Link to="/contents/novel" className={styles.novel}>
+              <Link to="/contents/novel">
                 소설
               </Link>
             </li>
@@ -93,7 +84,7 @@ function Header({ onSearch }) {
                 handleMenuClick('webtoon');
                 navigate('/contents/webtoon');
               }}>
-              <Link to="/contents/webtoon" className={styles.webtoon}>
+              <Link to="/contents/webtoon">
                 웹툰
               </Link>
             </li>
@@ -103,7 +94,7 @@ function Header({ onSearch }) {
                 handleMenuClick('drama');
                 navigate('/contents/drama');
               }}>
-              <Link to="/contents/drama" className={styles.drama}>
+              <Link to="/contents/drama">
                 드라마
               </Link>
             </li>
@@ -113,20 +104,20 @@ function Header({ onSearch }) {
                 handleMenuClick('movie');
                 navigate('/contents/movie');
               }}>
-              <Link to="/contents/movie" className={styles.movie}>
+              <Link to="/contents/movie">
                 영화
               </Link>
             </li>
           </ul>
         </nav>
-        <div style={{ flex: "1 0 0" }}></div>
+        <div className={styles.spacer}></div>
         <div onClick={goToMyPage}>마이페이지</div>
         {isLoggedIn ? (
           <>
             {!userInfo ? (
               <div>로딩 중...</div>
             ) : (
-              <div className={styles.userName}>{userInfo.username}님</div>
+              <div className={styles.userName}>{userInfo.userId}님</div>
             )}
             <button className={styles.logout} onClick={handleLogoutClick}>
               로그아웃

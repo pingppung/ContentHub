@@ -176,3 +176,13 @@
     margin: 0 20px;
   }
 } 
+.hero { height: 100%; padding: 0; border-radius: 0; }
+.hero .carouselWrapper { padding: 0; gap: 18px; perspective: none; justify-content: space-between; }
+.hero .carouselItem, .hero .carouselItem.active { flex: 0 0 30%; opacity: .85; height: 100%; transform: none; clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%); }
+.hero .imageWrapper { border-radius: 0; }
+.hero .carouselItem.active .imageWrapper { box-shadow: none; }
+.hero .contentImage, .hero .carouselItem:not(.active) .contentImage { width: 100%; height: 100%; object-fit: cover; object-position: center 25%; transform: none; }
+.hero .contentInfo { display: none; }
+.hero .navigationButtons { top: auto; bottom: 14px; transform: none; padding: 0 16px; }
+.hero .navButton { width: 30px; height: 30px; background: #ffffffb0; color: #655b83; box-shadow: none; }
+@media (max-width: 760px) { .hero { margin: 0; } .hero .carouselItem { display: flex; } .hero .carouselItem, .hero .carouselItem.active { flex: 0 0 34%; } }
